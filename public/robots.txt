@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Sitemap será acrescentado após a URL pública definitiva do site ser confirmada.
