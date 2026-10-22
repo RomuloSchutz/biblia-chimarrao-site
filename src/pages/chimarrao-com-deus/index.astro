@@ -1,4 +1,81 @@
 ---
 import Base from '../../layouts/Base.astro';
+
+const meses = [
+  { nome: 'Janeiro', tema: 'Recomeços', arquivo: '01_janeiro.webp' },
+  { nome: 'Fevereiro', tema: 'Intimidade', arquivo: '02_fevereiro.webp' },
+  { nome: 'Março', tema: 'Fé', arquivo: '03_marco.webp' },
+  { nome: 'Abril', tema: 'Cruz e Ressurreição', arquivo: '04_abril.webp' },
+  { nome: 'Maio', tema: 'Relacionamentos', arquivo: '05_maio.webp' },
+  { nome: 'Junho', tema: 'Propósito', arquivo: '06_junho.webp' },
+  { nome: 'Julho', tema: 'Tempo e Espera', arquivo: '07_julho.webp' },
+  { nome: 'Agosto', tema: 'Tempestades', arquivo: '08_agosto.webp' },
+  { nome: 'Setembro', tema: 'Transformação', arquivo: '09_setembro.webp' },
+  { nome: 'Outubro', tema: 'Gratidão', arquivo: '10_outubro.webp' },
+  { nome: 'Novembro', tema: 'Generosidade', arquivo: '11_novembro.webp' },
+  { nome: 'Dezembro', tema: 'Esperança e Celebração', arquivo: '12_dezembro.webp' },
+];
 ---
-<Base title="Chimarrão com Deus — 365 Encontros com Deus | Romulo Schutz" description="Conheça Chimarrão com Deus — 365 Encontros com Deus, devocional cristão anual de Romulo Schutz, integrado ao projeto Bíblia + Chimarrão."><section class="hero"><div class="shell"><div class="eyebrow">Devocional cristão</div><h1>Chimarrão<br/>com Deus</h1><p class="lead">365 Encontros com Deus. Uma jornada anual de leitura bíblica, reflexão, oração e passos práticos para o cotidiano.</p><div class="actions"><a class="btn primary" href="/aplicativo/">Ver no aplicativo</a></div></div></section><section><div class="shell grid-3"><article class="card"><h3>A Palavra</h3><p>O encontro diário começa na Escritura e conduz a uma leitura intencional.</p></article><article class="card"><h3>Reflexão</h3><p>O texto devocional ajuda a conectar a mensagem bíblica às perguntas, decisões e experiências do dia.</p></article><article class="card"><h3>Um passo para hoje</h3><p>A jornada estimula resposta prática, anotações e continuidade.</p></article></div></section><section><div class="shell"><p class="note">ISBN digital: aguardando emissão oficial. Este campo permanecerá sem número até a confirmação da CBL.</p></div></section></Base>
+<Base title="Chimarrão com Deus — 365 Encontros com Deus | Romulo Schutz" description="Conheça Chimarrão com Deus — 365 Encontros com Deus, devocional cristão anual de Romulo Schutz, integrado ao projeto Bíblia + Chimarrão.">
+  <section class="hero">
+    <div class="shell">
+      <div class="eyebrow">Devocional cristão</div>
+      <h1>Chimarrão<br/>com Deus</h1>
+      <p class="lead">365 Encontros com Deus. Uma jornada anual de leitura bíblica, reflexão, oração e passos práticos para o cotidiano.</p>
+      <div class="actions"><a class="btn primary" href="/aplicativo/">Ver no aplicativo</a></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shell grid-3">
+      <article class="card"><h3>A Palavra</h3><p>O encontro diário começa na Escritura e conduz a uma leitura intencional.</p></article>
+      <article class="card"><h3>Reflexão</h3><p>O texto devocional ajuda a conectar a mensagem bíblica às perguntas, decisões e experiências do dia.</p></article>
+      <article class="card"><h3>Um passo para hoje</h3><p>A jornada estimula resposta prática, anotações e continuidade.</p></article>
+    </div>
+  </section>
+
+  <section class="meses-section">
+    <div class="shell">
+      <div class="eyebrow">A jornada do ano</div>
+      <h2>12 meses. 12 temas. Um encontro por dia.</h2>
+      <p class="lead meses-intro">Cada mês do <strong>Chimarrão com Deus</strong> possui uma identidade visual e um tema próprio. Abaixo estão os cards oficiais da edição digital.</p>
+      <div class="meses-grid">
+        {meses.map((mes) => (
+          <article class="mes-card">
+            <img
+              src={`/images/chimarrao-com-deus/meses/${mes.arquivo}`}
+              alt={`${mes.nome} — ${mes.tema} | Chimarrão com Deus`}
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="400"
+            />
+            <div class="mes-meta">
+              <span>{mes.nome}</span>
+              <strong>{mes.tema}</strong>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shell">
+      <p class="note">ISBN digital: aguardando emissão oficial. Este campo permanecerá sem número até a confirmação da CBL.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .meses-section{padding-top:1rem}
+  .meses-intro{max-width:780px;margin-bottom:2rem}
+  .meses-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem}
+  .mes-card{margin:0;background:#fffaf1;border:1px solid rgba(52,73,58,.14);border-radius:20px;overflow:hidden;box-shadow:0 14px 32px rgba(31,49,39,.08)}
+  .mes-card img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:contain;background:#f5efe4}
+  .mes-meta{padding:1rem 1.1rem 1.15rem;display:flex;align-items:baseline;justify-content:space-between;gap:.75rem}
+  .mes-meta span{font-family:Georgia,'Times New Roman',serif;font-size:1.12rem;color:#173f31}
+  .mes-meta strong{font-size:.86rem;letter-spacing:.04em;text-transform:uppercase;color:#9a6b25;text-align:right}
+  @media (max-width:900px){.meses-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:600px){.meses-grid{grid-template-columns:1fr;gap:1rem}.mes-card{border-radius:16px}.mes-meta{padding:.85rem 1rem 1rem}}
+</style>
