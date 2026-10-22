@@ -3,9 +3,9 @@ import '../styles/global.css';
 const { title, description } = Astro.props;
 const siteUrl = 'https://biblia-chimarrao-site.pages.dev';
 const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
-const facebookUrl = 'https://www.facebook.com/search/top?q=Romulo%20Schutz';
-const instagramUrl = 'https://www.instagram.com/explore/search/keyword/?q=romulo%20schutz';
-const youtubeUrl = 'https://www.youtube.com/results?search_query=Romulo+Schutz';
+const facebookUrl = 'https://www.facebook.com/romuloschutz';
+const instagramUrl = 'https://www.instagram.com/romuloschutz/';
+const youtubeUrl = 'https://www.youtube.com/@romuloschutz';
 const whatsappUrl = 'https://wa.me/5549999004892';
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const structuredData = {
@@ -26,6 +26,7 @@ const structuredData = {
       name: 'Romulo Schutz',
       url: `${siteUrl}/autor/`,
       email: 'mailto:biblia.chimarrao@gmail.com',
+      sameAs: [facebookUrl, instagramUrl, youtubeUrl],
       jobTitle: 'Escritor e pesquisador'
     },
     {
@@ -96,8 +97,8 @@ const structuredData = {
           <a href="/loja/">Loja</a>
           <a href="/autor/">Sobre o autor</a>
           <a href={facebookUrl} target="_blank" rel="noopener noreferrer">Facebook · Romulo Schutz</a>
-          <a href={instagramUrl} target="_blank" rel="noopener noreferrer">Instagram · Romulo Schutz</a>
-          <a href={youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube · Romulo Schutz</a>
+          <a href={instagramUrl} target="_blank" rel="noopener noreferrer">Instagram · @romuloschutz</a>
+          <a href={youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube · @romuloschutz</a>
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>
           <a href="mailto:biblia.chimarrao@gmail.com">biblia.chimarrao@gmail.com</a>
         </div>
