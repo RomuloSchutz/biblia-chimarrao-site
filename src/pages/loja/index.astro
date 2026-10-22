@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
+const livros = [
+  {titulo:'Entre os Tempos',sub:'A Urgência de Compreender o Calendário de Deus',href:'/livros/entre-os-tempos/'},
+  {titulo:'Entre o Já e o Ainda Não',sub:'A Esperança Inabalável em um Mundo Acelerado',href:'/livros/entre-o-ja-e-o-ainda-nao/'},
+  {titulo:'Entre os Sistemas — Volume 1',sub:'Religioso, Filosófico, Político e Econômico — Cristo, o Libertador',href:'/livros/entre-os-sistemas-volume-1/'},
+  {titulo:'Entre os Sistemas — Volume 2',sub:'Fé e Doutrina — Suficiência de Cristo',href:'/livros/entre-os-sistemas-volume-2/'},
+  {titulo:'Entre a Honra e a Gratidão',sub:'Lealdade, Fidelidade, Obediência e Amor',href:'/livros/entre-a-honra-e-a-gratidao/'},
+  {titulo:'Cristo: O Marco entre o Antes e o Depois',sub:'Como a fé, a história e o calendário se encontram na linha do tempo',href:'/livros/cristo-o-marco/'},
+  {titulo:'Chimarrão com Deus — 365 Encontros com Deus',sub:'Mais que leitura. Um encontro real.',href:'/livros/chimarrao-com-deus/'}
+];
+---
+<Base title="Loja | Bíblia + Chimarrão" description="Área de compra dos livros digitais de Romulo Schutz e do devocional Chimarrão com Deus. Checkout direto pelo site em preparação.">
+  <section class="hero"><div class="shell split">
+    <div><div class="eyebrow">Loja digital</div><h1>Livros para seguir a caminhada.</h1><p class="lead">Esta área está sendo preparada para permitir a compra direta das obras digitais de Romulo Schutz, sem exigir a aquisição do aplicativo.</p></div>
+    <div class="card"><div class="eyebrow">Em implantação</div><h3>Compra direta pelo site</h3><p>O catálogo já está separado do aplicativo. O próximo passo comercial será conectar o checkout seguro e liberar a entrega digital das obras.</p><p class="note">Nenhuma cobrança está ativa nesta página neste momento.</p></div>
+  </div></section>
+  <section><div class="shell"><div class="eyebrow">Catálogo</div><h2>Conheça antes de comprar.</h2><div class="book-grid">{livros.map((livro)=><article class="book-card"><span class="book-number">E-BOOK</span><h3>{livro.titulo}</h3><p class="kicker">{livro.sub}</p><div class="actions"><a class="btn secondary" href={livro.href}>Conhecer a obra</a><span class="btn disabled" aria-disabled="true">Compra em preparação</span></div></article>)}</div></div></section>
+  <section><div class="shell split"><div><div class="eyebrow">Duas portas de entrada</div><h2>O leitor escolhe como quer chegar.</h2></div><div><p class="lead">Quem quiser apenas um livro poderá comprá-lo diretamente no site. Quem desejar a experiência completa poderá acessar o aplicativo Bíblia + Chimarrão, com devocional, caminhada, biblioteca, anotações e outros recursos.</p><div class="actions"><a class="btn primary" href={appUrl} target="_blank" rel="noopener noreferrer">Conhecer o aplicativo</a><a class="btn secondary" href="/livros/">Explorar os livros</a></div></div></div></section>
+</Base>
