@@ -11,98 +11,14 @@ const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
-    {
-      '@type': 'WebSite',
-      '@id': `${siteUrl}/#website`,
-      url: siteUrl,
-      name: 'Bíblia + Chimarrão',
-      description: 'Palavra, pausa, reflexão e encontro com Deus.',
-      inLanguage: 'pt-BR',
-      author: { '@id': `${siteUrl}/autor/#person` }
-    },
-    {
-      '@type': 'Person',
-      '@id': `${siteUrl}/autor/#person`,
-      name: 'Romulo Schutz',
-      url: `${siteUrl}/autor/`,
-      email: 'mailto:biblia.chimarrao@gmail.com',
-      sameAs: [facebookUrl, instagramUrl, youtubeUrl],
-      jobTitle: 'Escritor e pesquisador'
-    },
-    {
-      '@type': 'WebApplication',
-      name: 'Bíblia + Chimarrão',
-      url: appUrl,
-      applicationCategory: 'LifestyleApplication',
-      operatingSystem: 'Web',
-      inLanguage: 'pt-BR',
-      description: 'Aplicativo com devocional, encontro diário, biblioteca, favoritos, anotações, caminhada, lembretes e livros.'
-    }
+    {'@type':'WebSite','@id':`${siteUrl}/#website`,url:siteUrl,name:'Bíblia + Chimarrão',description:'Palavra, pausa, reflexão e encontro com Deus.',inLanguage:'pt-BR',author:{'@id':`${siteUrl}/autor/#person`}},
+    {'@type':'Person','@id':`${siteUrl}/autor/#person`,name:'Romulo Schutz',url:`${siteUrl}/autor/`,email:'mailto:biblia.chimarrao@gmail.com',sameAs:[facebookUrl,instagramUrl,youtubeUrl],jobTitle:'Escritor e pesquisador'},
+    {'@type':'WebApplication',name:'Bíblia + Chimarrão',url:appUrl,applicationCategory:'LifestyleApplication',operatingSystem:'Web',inLanguage:'pt-BR',description:'Aplicativo com devocional, encontro diário, biblioteca, favoritos, anotações, caminhada, lembretes e livros.'}
   ]
 };
 ---
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="Bíblia + Chimarrão" />
-    <meta property="og:locale" content="pt_BR" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-    <title>{title}</title>
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="shell nav">
-        <a class="brand" href="/" aria-label="Bíblia + Chimarrão — início">Bíblia + Chimarrão</a>
-        <nav class="nav-links" aria-label="Navegação principal">
-          <a href="/projeto/">O Projeto</a>
-          <a href="/chimarrao-com-deus/">Chimarrão com Deus</a>
-          <a href="/aplicativo/">Aplicativo</a>
-          <a href="/livros/">Livros</a>
-          <a href="/loja/">Loja</a>
-          <a href="/autor/">Autor</a>
-          <a href="/contato/">Contato</a>
-        </nav>
-        <details class="mobile-nav">
-          <summary aria-label="Abrir menu">Menu</summary>
-          <nav aria-label="Navegação móvel">
-            <a href="/projeto/">O Projeto</a>
-            <a href="/chimarrao-com-deus/">Chimarrão com Deus</a>
-            <a href="/aplicativo/">Aplicativo</a>
-            <a href="/livros/">Livros</a>
-            <a href="/loja/">Loja</a>
-            <a href="/autor/">Autor</a>
-            <a href="/contato/">Contato</a>
-            <a class="mobile-app-link" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir aplicativo ↗</a>
-          </nav>
-        </details>
-      </div>
-    </header>
-    <main><slot /></main>
-    <footer class="footer">
-      <div class="shell footer-grid">
-        <div><strong>Bíblia + Chimarrão</strong><br />Palavra, pausa, reflexão e encontro. Projeto de Romulo Schutz.</div>
-        <div class="footer-links">
-          <a href={appUrl} target="_blank" rel="noopener noreferrer">Acessar aplicativo</a>
-          <a href="/livros/">Livros</a>
-          <a href="/loja/">Loja</a>
-          <a href="/autor/">Sobre o autor</a>
-          <a href={facebookUrl} target="_blank" rel="noopener noreferrer">Facebook · Romulo Schutz</a>
-          <a href={instagramUrl} target="_blank" rel="noopener noreferrer">Instagram · @romuloschutz</a>
-          <a href={youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube · @romuloschutz</a>
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-          <a href="mailto:biblia.chimarrao@gmail.com">biblia.chimarrao@gmail.com</a>
-        </div>
-      </div>
-    </footer>
-  </body>
-</html>
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content="index,follow,max-image-preview:large"/><link rel="canonical" href={canonical}/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:site_name" content="Bíblia + Chimarrão"/><meta property="og:locale" content="pt_BR"/><meta name="twitter:card" content="summary_large_image"/><script type="application/ld+json" set:html={JSON.stringify(structuredData)}/><title>{title}</title></head><body>
+<header class="site-header"><div class="shell nav"><a class="brand" href="/" aria-label="Bíblia + Chimarrão — início">Bíblia + Chimarrão</a><nav class="nav-links" aria-label="Navegação principal"><a href="/projeto/">O Projeto</a><a href="/chimarrao-com-deus/">Chimarrão com Deus</a><a href="/aplicativo/">Aplicativo</a><a href="/livros/">Livros</a><a href="/loja/">Loja</a><a href="/autor/">Autor</a><a href="/contato/">Contato</a><a class="account-link" href="/minha-conta/">Minha Conta</a></nav><details class="mobile-nav"><summary aria-label="Abrir menu">Menu</summary><nav aria-label="Navegação móvel"><a href="/projeto/">O Projeto</a><a href="/chimarrao-com-deus/">Chimarrão com Deus</a><a href="/aplicativo/">Aplicativo</a><a href="/livros/">Livros</a><a href="/loja/">Loja</a><a href="/autor/">Autor</a><a href="/contato/">Contato</a><a href="/minha-conta/">Minha Conta</a><a class="mobile-app-link" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir aplicativo ↗</a></nav></details></div></header>
+<main><slot /></main>
+<footer class="footer"><div class="shell footer-grid"><div><strong>Bíblia + Chimarrão</strong><br/>Palavra, pausa, reflexão e encontro. Projeto de Romulo Schutz.</div><div class="footer-links"><a href="/minha-conta/">Minha Conta</a><a href={appUrl} target="_blank" rel="noopener noreferrer">Acessar aplicativo</a><a href="/livros/">Livros</a><a href="/loja/">Loja</a><a href="/autor/">Sobre o autor</a><a href={facebookUrl} target="_blank" rel="noopener noreferrer">Facebook · Romulo Schutz</a><a href={instagramUrl} target="_blank" rel="noopener noreferrer">Instagram · @romuloschutz</a><a href={youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube · @romuloschutz</a><a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a><a href="mailto:biblia.chimarrao@gmail.com">biblia.chimarrao@gmail.com</a></div></div></footer>
+</body></html>
