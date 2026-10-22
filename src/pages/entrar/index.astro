@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="Entrar | Bíblia + Chimarrão" description="Entre com a mesma conta do aplicativo Bíblia + Chimarrão para acessar suas compras e conteúdos no site.">
+<section class="hero account-hero"><div class="shell split"><div><div class="eyebrow">Conta do leitor</div><h1>Uma conta. Dois caminhos de acesso.</h1><p class="lead">Use o mesmo e-mail e senha no site e no aplicativo. Suas aquisições ficam vinculadas à sua conta, não ao dispositivo onde a compra foi feita.</p></div><div class="account-panel">
+  <div id="auth-signed-in" hidden><div class="eyebrow">Você já está conectado</div><h3 id="auth-user-name">Sua conta</h3><p id="auth-user-email"></p><div class="actions"><a class="btn primary" href="/minha-conta/">Abrir Minha Conta</a><button id="logout-button" class="btn secondary" type="button">Sair</button></div></div>
+  <form id="login-form" class="account-form"><div class="eyebrow">Entrar</div><h3>Acesse sua conta</h3><label>E-mail<input id="login-email" type="email" autocomplete="email" required/></label><label>Senha<input id="login-password" type="password" autocomplete="current-password" minlength="6" required/></label><button class="btn primary" type="submit">Entrar</button><p id="login-message" class="form-message" role="status"></p></form>
+</div></div></section>
+<section><div class="shell split"><div><div class="eyebrow">Ainda não tem conta?</div><h2>Crie uma vez e use nos dois lugares.</h2><p>O cadastro feito aqui será o mesmo usado no aplicativo Bíblia + Chimarrão.</p></div><form id="signup-form" class="account-panel account-form"><label>Seu nome<input id="signup-name" type="text" autocomplete="name" required/></label><label>E-mail<input id="signup-email" type="email" autocomplete="email" required/></label><label>Senha<input id="signup-password" type="password" autocomplete="new-password" minlength="8" required/></label><button class="btn primary" type="submit">Criar minha conta</button><p id="signup-message" class="form-message" role="status"></p></form></div></section>
+<script>
+  import { supabase } from '../../lib/supabase-browser.js';
+  const loginForm=document.querySelector('#login-form');
+  const signupForm=document.querySelector('#signup-form');
+  const signed=document.querySelector('#auth-signed-in');
+  const loginMessage=document.querySelector('#login-message');
+  const signupMessage=document.querySelector('#signup-message');
+  function showUser(user){if(!user)return;signed.hidden=false;loginForm.hidden=true;document.querySelector('#auth-user-email').textContent=user.email||'';document.querySelector('#auth-user-name').textContent=user.user_metadata?.full_name||'Leitor';}
+  const {data:{session}}=await supabase.auth.getSession(); if(session?.user)showUser(session.user);
+  loginForm?.addEventListener('submit',async e=>{e.preventDefault();loginMessage.textContent='Entrando...';const email=document.querySelector('#login-email').value.trim();const password=document.querySelector('#login-password').value;const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error){loginMessage.textContent='Não foi possível entrar. Confira seu e-mail e sua senha.';return;}showUser(data.user);loginMessage.textContent='';window.location.href='/minha-conta/';});
+  signupForm?.addEventListener('submit',async e=>{e.preventDefault();signupMessage.textContent='Criando sua conta...';const full_name=document.querySelector('#signup-name').value.trim();const email=document.querySelector('#signup-email').value.trim();const password=document.querySelector('#signup-password').value;const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name}}});if(error){signupMessage.textContent=error.message||'Não foi possível criar a conta.';return;}signupMessage.textContent=data.session?'Conta criada. Entrando...':'Conta criada. Confira seu e-mail caso seja solicitada confirmação.';if(data.session)window.location.href='/minha-conta/';});
+  document.querySelector('#logout-button')?.addEventListener('click',async()=>{await supabase.auth.signOut();location.reload();});
+</script>
+</Base>
