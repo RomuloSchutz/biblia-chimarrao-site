@@ -14,7 +14,7 @@ const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
       <p class="note">QR code oficial vinculado ao endereço de produção do aplicativo.</p>
     </div>
     <a class="qr-card" href={appUrl} target="_blank" rel="noopener noreferrer" aria-label="Abrir aplicativo Bíblia + Chimarrão">
-      <img src="/assets/qr-aplicativo.webp" alt="QR code para acessar o aplicativo Bíblia + Chimarrão" width="320" height="320" style="background:white;padding:12px;border-radius:24px;"/>
+      <div id="qr-app" style="background:white;padding:18px;border-radius:24px;display:flex;align-items:center;justify-content:center;width:min(100%,356px);aspect-ratio:1/1;"></div>
       <strong>Escaneie para acessar</strong>
       <span>biblia-chimarrao-pwa.rommar2179.workers.dev</span>
     </a>
@@ -26,4 +26,26 @@ const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
     <article class="card"><h3>Biblioteca, livros e ideias</h3><p>Um espaço que integra obras de Romulo Schutz, biblioteca particular, ideias, reflexões e conteúdos de apoio à leitura.</p></article>
   </div></div></section>
   <section><div class="shell split"><div><div class="eyebrow">Pausa com propósito</div><h2>Uma palavra. Uma pausa. Um encontro.</h2></div><div><p class="lead">O chimarrão aparece como símbolo cotidiano de pausa e presença — nunca como objeto religioso. A centralidade está na Palavra de Deus, na reflexão e na disposição de viver com intencionalidade.</p><a class="btn secondary" href={appUrl} target="_blank" rel="noopener noreferrer">Conheça o aplicativo</a></div></div></section>
+
+  <script is:inline src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var target = document.getElementById('qr-app');
+      if (target && window.QRCode) {
+        target.innerHTML = '';
+        new QRCode(target, {
+          text: 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/',
+          width: 320,
+          height: 320,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+        var img = target.querySelector('img');
+        var canvas = target.querySelector('canvas');
+        if (img) img.style.cssText = 'width:100%;height:100%;object-fit:contain;image-rendering:auto;';
+        if (canvas) canvas.style.cssText = 'width:100%!important;height:100%!important;display:block;';
+      }
+    });
+  </script>
 </Base>
