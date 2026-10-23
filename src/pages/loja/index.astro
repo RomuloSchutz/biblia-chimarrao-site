@@ -18,7 +18,7 @@ const emBreve=[
 <section class="hero compact-hero"><div class="shell split"><div><div class="eyebrow">Loja digital</div><h1>Escolha o que faz sentido para sua caminhada.</h1><p class="lead">Livro e acesso anual são produtos independentes. Você pode adquirir somente um e-book, somente a experiência anual ou combinar os dois.</p><p>A proposta da loja é simples: primeiro conhecer, depois escolher. Cada obra possui uma página própria para que você entenda o tema, a intenção e o caminho de leitura antes da compra.</p></div><div class="card"><div class="eyebrow">Uma conta</div><h3>Compre aqui. Acesse também no aplicativo.</h3><p>As aquisições ficam vinculadas à sua conta. Use o mesmo e-mail e senha no site e no aplicativo para manter sua biblioteca e seus acessos em um único lugar.</p></div></div></section>
 <section><div class="shell"><div class="eyebrow">Disponíveis</div><h2>Leituras para momentos diferentes da caminhada.</h2><p class="lead store-intro">Há livros para compreender o tempo, discernir o mundo, sustentar a esperança e cultivar uma vida de fé mais consciente. Clique em “Conhecer” para entrar na página editorial da obra antes de decidir pela compra.</p><div class="store-cover-grid">{produtos.map(p=><article class="store-cover-card" data-store-card={p.code}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><div class="store-meta"><span class="book-number">{p.tipo}</span><h3 class="store-title">{p.titulo}</h3>{p.isbn&&<small class="store-isbn">ISBN {p.isbn}</small>}<strong class="store-price" data-price={p.code}>Carregando valor...</strong></div><div class="actions" data-actions={p.code}><a class="btn secondary" href={p.href}>Conhecer</a><button class="btn primary buy-button" type="button" data-buy={p.code} disabled>Comprar</button></div></article>)}</div>
 <div class="purchase-consent" id="purchase-consent"><label><input id="purchase-accepted" type="checkbox"/> Li e aceito a <a href="/politicas/#compras" target="_blank">Política de Compra, Cancelamento e Reembolso Digital</a> e a <a href="/politicas/#licenca" target="_blank">Licença de Uso de Conteúdos Digitais</a>.</label><p id="store-message" class="form-message" role="status"></p></div></div></section>
-<section class="development-section"><div class="shell"><div class="eyebrow">Pré-lançamentos</div><h2>Obras que continuam sendo construídas.</h2><p class="lead">Acompanhe os próximos títulos e conheça desde já a trajetória editorial que está sendo preparada para novas leituras.</p><div class="store-cover-grid">{emBreve.map(p=><article class="store-cover-card prelaunch-cover" data-prelaunch-title={p.titulo}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><span class="status-badge">EM BREVE · LANÇAMENTO 2027</span><div class="prelaunch-admin-actions" data-prelaunch-actions={p.titulo}></div></article>)}</div></div></section>
+<section class="development-section"><div class="shell"><div class="eyebrow">Pré-lançamentos</div><h2>Obras que continuam sendo construídas.</h2><p class="lead">Acompanhe os próximos títulos e conheça desde já a trajetória editorial que está sendo preparada para novas leituras.</p><div class="store-cover-grid">{emBreve.map(p=><article class="store-cover-card prelaunch-cover" data-prelaunch-title={p.titulo}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><span class="status-badge">EM BREVE · LANÇAMENTO 2027</span><div class="prelaunch-admin-actions"></div></article>)}</div></div></section>
 <section><div class="shell split"><div><div class="eyebrow">Duas portas de entrada</div><h2>Site e aplicativo trabalham juntos.</h2></div><div><p class="lead">Quem quiser apenas um livro compra apenas o livro. Quem adquirir a Edição 2027 pode viver o devocional no aplicativo e também lê-lo pelo site usando a mesma conta.</p><p>Você escolhe a forma de entrar; o conteúdo permanece conectado à sua caminhada.</p><div class="actions"><a class="btn primary" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir aplicativo</a><a class="btn secondary" href="/devocional/">Ler no site</a></div></div></div></section>
 <script>
  import { supabase } from '../../lib/supabase-browser.js';
@@ -33,21 +33,24 @@ const emBreve=[
    isAdmin=adminResult.data===true;
    library=libraryResult.data||[];
  }
- const byEdition=new Map(library.filter(x=>x.edition_id).map(x=>[x.edition_id,x]));
  const normalize=(value='')=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,' ').trim().toLowerCase();
+ const byEdition=new Map(library.filter(x=>x.edition_id).map(x=>[x.edition_id,x]));
  const byTitle=new Map(library.map(x=>[normalize(x.title),x]));
+ const findLibraryItem=(product)=>{
+   if(product?.edition_id&&byEdition.has(product.edition_id)) return byEdition.get(product.edition_id);
+   const key=normalize(product?.title||'');
+   return byTitle.get(key)||library.find(x=>{const bookKey=normalize(x.title);return key&&bookKey&&(key.startsWith(bookKey)||bookKey.startsWith(key));})||null;
+ };
 
  document.querySelectorAll('[data-price]').forEach(el=>{
-   const code=el.dataset.price,p=products[code];
-   const item=p?.edition_id?byEdition.get(p.edition_id):null;
+   const code=el.dataset.price,p=products[code],item=findLibraryItem(p);
    const hasAccess=isAdmin||(item?.has_access===true);
    if(hasAccess){el.textContent=isAdmin?'ACESSO DO AUTOR':'JÁ ADQUIRIDO';el.classList.add('store-access-label');return;}
    el.textContent=p&&p.is_active?new Intl.NumberFormat('pt-BR',{style:'currency',currency:p.currency||'BRL'}).format(p.amount_cents/100):'Indisponível';
  });
 
  document.querySelectorAll('[data-buy]').forEach(button=>{
-   const code=button.dataset.buy,p=products[code],card=document.querySelector(`[data-store-card="${code}"]`),actions=document.querySelector(`[data-actions="${code}"]`);
-   const item=p?.edition_id?byEdition.get(p.edition_id):null;
+   const code=button.dataset.buy,p=products[code],card=document.querySelector(`[data-store-card="${code}"]`),actions=document.querySelector(`[data-actions="${code}"]`),item=findLibraryItem(p);
    const hasBookAccess=isAdmin||(item?.has_access===true);
    if(code==='app_biblia_chimarrao'&&isAdmin){
      button.remove();
@@ -72,7 +75,7 @@ const emBreve=[
      const item=byTitle.get(normalize(title));
      if(item?.is_ready){
        card.querySelector('.status-badge').textContent='ACESSO DO AUTOR';
-       card.querySelector(`[data-prelaunch-actions="${CSS.escape(title)}"]`)?.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);
+       card.querySelector('.prelaunch-admin-actions')?.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);
        card.classList.add('has-library-access');
      }
    });
