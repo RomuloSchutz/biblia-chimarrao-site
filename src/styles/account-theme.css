@@ -3,8 +3,11 @@ html{color-scheme:light;--bg:#e8f0ea;--paper:#fffdf8;--ink:#18342a;--muted:#5f72
 body{transition:background-color .2s ease,color .2s ease;background:var(--bg);color:var(--ink)}
 section{background:linear-gradient(180deg,#eaf2ec 0%,#e2ece5 100%);border-color:var(--line)}
 section:nth-of-type(even):not(.dark-section):not(.social-contact-section){background:linear-gradient(180deg,#e3ede6 0%,#dce8e0 100%)}
-.journey-intro,.development-section,.devotional-web-hero,.app-brand-hero,.contact-closing{background:linear-gradient(180deg,#e5efe8,#dbe8df)!important}
-.footer{background:#dbe8df;color:#4f665b}.footer strong{color:#17382f}
+.site-opening,.journey-intro,.development-section,.devotional-web-hero,.app-brand-hero,.contact-closing,.author-encounter-section,.book-editorial-media{background:linear-gradient(180deg,#e5efe8,#dbe8df)!important}
+.site-opening-art{background:#123b31!important}
+.footer{background:#dbe8df!important;color:#4f665b}.footer strong{color:#17382f}
+.purchase-consent,.legal-web-nav{background:#f8fcf9!important}
+.legal-web-nav a{background:#e2eee6!important}
 
 html[data-theme="dark"]{color-scheme:dark;--bg:#0b211a;--paper:#142a21;--ink:#f4eee4;--muted:#b9c6bf;--green:#d7b373;--green2:#e4c58d;--gold:#d5aa62;--line:rgba(236,219,187,.15)}
 html[data-theme="dark"] body{background:#0b211a;color:var(--ink)}
@@ -13,13 +16,15 @@ html[data-theme="dark"] section:nth-of-type(even):not(.dark-section):not(.social
 html[data-theme="dark"] .card,html[data-theme="dark"] .book-card,html[data-theme="dark"] .fact,html[data-theme="dark"] .topic,html[data-theme="dark"] .account-panel,html[data-theme="dark"] .encounter-web,html[data-theme="dark"] .day-web-card{background:linear-gradient(145deg,#173a2d,#10281f);border-color:rgba(226,190,127,.22);box-shadow:0 16px 38px rgba(0,0,0,.25)}
 html[data-theme="dark"] .card h3,html[data-theme="dark"] .fact strong,html[data-theme="dark"] .store-title{color:#f3dfb8}
 html[data-theme="dark"] .card p,html[data-theme="dark"] .book-card p,html[data-theme="dark"] .lead,html[data-theme="dark"] .library-invite{color:#c0cbc5}
-html[data-theme="dark"] .journey-intro,html[data-theme="dark"] .development-section,html[data-theme="dark"] .devotional-web-hero,html[data-theme="dark"] .app-brand-hero,html[data-theme="dark"] .contact-closing{background:linear-gradient(180deg,#11382b,#0c291f)!important}
+html[data-theme="dark"] .site-opening,html[data-theme="dark"] .journey-intro,html[data-theme="dark"] .development-section,html[data-theme="dark"] .devotional-web-hero,html[data-theme="dark"] .app-brand-hero,html[data-theme="dark"] .contact-closing,html[data-theme="dark"] .author-encounter-section,html[data-theme="dark"] .book-editorial-media{background:linear-gradient(180deg,#11382b,#0c291f)!important}
 html[data-theme="dark"] .quote-box{background:#19392d;border-color:rgba(224,184,112,.28);color:#f1dfbd}
 html[data-theme="dark"] .month-web-card,html[data-theme="dark"] .month-web-card span{background:#142f25!important;border-color:rgba(226,190,127,.2)}
 html[data-theme="dark"] .month-web-card img{background:#10271f!important}
 html[data-theme="dark"] .account-form input,html[data-theme="dark"] .password-form input,html[data-theme="dark"] .setting-select{background:#0d261d;color:#f4eee4;border-color:rgba(226,190,127,.28)}
 html[data-theme="dark"] .btn.secondary{border-color:#d7b373;color:#f1dfbd}
-html[data-theme="dark"] .footer{background:#082019;color:#b9c1bc}html[data-theme="dark"] .footer strong{color:#f4eee4}
+html[data-theme="dark"] .footer{background:#082019!important;color:#b9c1bc}html[data-theme="dark"] .footer strong{color:#f4eee4}
+html[data-theme="dark"] .purchase-consent,html[data-theme="dark"] .legal-web-nav{background:#102c22!important}
+html[data-theme="dark"] .legal-web-nav a{background:#183b2e!important}
 
 /* Minha Conta — configuracoes */
 .account-settings-section{padding:58px 0 0;border-top:1px solid var(--line);margin-top:52px}
@@ -30,9 +35,9 @@ html[data-theme="dark"] .footer{background:#082019;color:#b9c1bc}html[data-theme
 .setting-select,.password-form input{width:100%;padding:13px 14px;border:1px solid rgba(31,42,36,.2);border-radius:14px;background:#fff;font:inherit;color:var(--ink)}
 .setting-help{font-size:.86rem;margin-top:10px}.password-form{display:grid;gap:12px}.password-form .btn{width:max-content;margin-top:4px}
 
-/* QR sempre limpo, inclusive em navegadores com modo escuro forcado */
+/* QR sempre branco e preto, inclusive em navegadores com modo escuro forcado */
 .qr-card{background:linear-gradient(145deg,#123b31,#08271f)!important;color:#fff!important}
-.qr-card img{background:#fff!important;opacity:1!important;filter:contrast(1.35)!important;mix-blend-mode:normal!important;color-scheme:light!important;border:14px solid #fff!important;padding:0!important;box-shadow:0 16px 36px rgba(0,0,0,.22)!important}
+.qr-card img{background:#fff!important;opacity:1!important;filter:brightness(0)!important;mix-blend-mode:normal!important;color-scheme:light!important;border:16px solid #fff!important;padding:0!important;box-shadow:0 16px 36px rgba(0,0,0,.22)!important}
 
 /* Home — os antigos hotspots foram removidos; os acessos ficam nos botoes reais abaixo */
 .opening-hotspots,.opening-hotspot{display:none!important}
