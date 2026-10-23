@@ -29,4 +29,39 @@ const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
   <section><div class="shell split"><div><div class="eyebrow">Romulo Schutz</div><h2><span class="entre-inline">ENTRE</span> ouvir, viver e escrever.</h2><p class="lead">Minha vida acontece entre lugares, responsabilidades e encontros: entre o trabalho e a família, entre o atendimento e o púlpito, entre a sala de aula e o escritório, entre ouvir alguém e sentar para escrever.</p><p>É desse espaço que nasce a escrita do “entre”. A vida raramente está apenas de um lado ou de outro; ela acontece nas travessias, nas perguntas, nas escolhas e no que ainda estamos aprendendo a compreender.</p><div class="actions"><a class="btn secondary" href="/autor/">Conhecer o autor</a></div></div><div><img src="/assets/romulo-escrevendo-horto.png" alt="Romulo Schutz escrevendo no horto, com Bíblia, livros e chimarrão" class="author-conversation-feature"/></div></div></section>
 
   <section><div class="shell"><div class="eyebrow">Escolha sua porta de entrada</div><h2>Aplicativo, livros ou devocional.</h2><div class="grid-3"><article class="card"><h3>Aplicativo Bíblia + Chimarrão</h3><p>Devocional, encontro diário, caminhada, favoritos, anotações, biblioteca e conteúdos em uma experiência digital integrada à sua conta.</p><a class="text-link" href={appUrl} target="_blank" rel="noopener noreferrer">Acessar o aplicativo →</a></article><article class="card"><h3>Biblioteca de livros</h3><p>Conheça cada obra, sua proposta e seus temas antes de escolher a leitura que mais conversa com o momento que você está vivendo.</p><a class="text-link" href="/livros/">Conhecer os livros →</a></article><article class="card"><h3>Loja digital</h3><p>Adquira e-books individualmente ou o acesso anual ao devocional. Livro e assinatura são escolhas independentes.</p><a class="text-link" href="/loja/">Ver a loja →</a></article></div></div></section>
+
+  <style is:global>
+    .site-opening .opening-hotspot{
+      bottom:24.8%!important;
+      height:10.2%!important;
+      transform:none!important;
+      background:transparent!important;
+      box-shadow:none!important;
+    }
+    .site-opening .opening-hotspot-site{left:25.5%!important;width:19.2%!important}
+    .site-opening .opening-hotspot-app{left:45.8%!important;width:21.4%!important}
+    .site-opening .opening-hotspot:hover,
+    .site-opening .opening-hotspot:focus-visible{
+      background:rgba(211,171,104,.07)!important;
+      box-shadow:inset 0 0 0 2px rgba(238,205,148,.35)!important;
+      transform:none!important;
+    }
+    .site-opening-actions .btn.secondary{
+      background:#e6c487!important;
+      color:#17382f!important;
+      border-color:#e6c487!important;
+      font-weight:800!important;
+      box-shadow:0 7px 20px rgba(0,0,0,.16);
+    }
+    .site-opening-actions .btn.secondary:hover,
+    .site-opening-actions .btn.secondary:focus-visible{
+      background:#f0d8a6!important;
+      border-color:#f0d8a6!important;
+      color:#102b23!important;
+    }
+    @media(max-width:620px){
+      .site-opening .opening-hotspot{bottom:24.2%!important;height:10.8%!important}
+      .site-opening-actions .btn{max-width:360px}
+    }
+  </style>
 </Base>
