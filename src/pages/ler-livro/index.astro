@@ -36,33 +36,47 @@ import Base from '../../layouts/Base.astro';
       const {data:{session}}=await supabase.auth.getSession();
       if(!session?.user){window.location.href='/entrar/?next='+encodeURIComponent(window.location.pathname+window.location.search);}
       else {
-        // A biblioteca serve apenas para enriquecer o título. A autorização final fica
-        // exclusivamente na Edge Function, que valida compra, acesso concedido e administrador.
         const library=await supabase.rpc('my_book_library');
         const item=(library.data||[]).find(x=>x.edition_id===editionId);
         if(item?.title) titleEl.textContent=item.title;
 
-        const access=await supabase.functions.invoke('book-epub-access',{body:{edition_id:editionId,access_token:session.access_token}});
-        if(access.error||!access.data?.signed_url){
-          const message=access.data?.error||access.error?.message||'Não foi possível abrir este livro agora.';
-          fail(message);
+        let accessData=null;
+        try{
+          const endpoint=`https://srabzgokulsiujusbqxl.supabase.co/functions/v1/book-epub-access`;
+          const response=await fetch(endpoint,{
+            method:'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization':`Bearer ${session.access_token}`,
+              'apikey':import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+            },
+            body:JSON.stringify({edition_id:editionId,access_token:session.access_token})
+          });
+          const payload=await response.json().catch(()=>({}));
+          if(!response.ok||!payload?.signed_url) throw new Error(payload?.error||`Falha ao liberar o livro (${response.status}).`);
+          accessData=payload;
+        }catch(err){
+          console.error('book-epub-access',err);
+          fail(err instanceof Error?err.message:'Não foi possível comunicar com o servidor de leitura. Atualize a página e tente novamente.');
         }
-        else if(typeof window.ePub!=='function'){
-          fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
-        }
-        else {
-          status.hidden=true;viewer.hidden=false;
-          try{
-            const book=window.ePub(access.data.signed_url);
-            const rendition=book.renderTo('epub-viewer',{width:'100%',height:'100%',spread:'auto',flow:'paginated'});
-            await rendition.display();
-            prev.disabled=false;next.disabled=false;
-            prev.addEventListener('click',()=>rendition.prev());
-            next.addEventListener('click',()=>rendition.next());
-            document.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft')rendition.prev();if(e.key==='ArrowRight')rendition.next();});
-          }catch(err){
-            console.error(err);
-            fail('O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra. Atualize a página e tente novamente.');
+
+        if(accessData?.signed_url){
+          if(typeof window.ePub!=='function'){
+            fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
+          } else {
+            status.hidden=true;viewer.hidden=false;
+            try{
+              const book=window.ePub(accessData.signed_url);
+              const rendition=book.renderTo('epub-viewer',{width:'100%',height:'100%',spread:'auto',flow:'paginated'});
+              await rendition.display();
+              prev.disabled=false;next.disabled=false;
+              prev.addEventListener('click',()=>rendition.prev());
+              next.addEventListener('click',()=>rendition.next());
+              document.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft')rendition.prev();if(e.key==='ArrowRight')rendition.next();});
+            }catch(err){
+              console.error(err);
+              fail('O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra. Atualize a página e tente novamente.');
+            }
           }
         }
       }
