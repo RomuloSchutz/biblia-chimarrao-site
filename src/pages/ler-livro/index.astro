@@ -11,7 +11,7 @@ import Base from '../../layouts/Base.astro';
       <div class="reader-actions">
         <button id="reader-prev" class="btn secondary" type="button" disabled>← Anterior</button>
         <button id="reader-next" class="btn secondary" type="button" disabled>Próxima →</button>
-        <a class="btn secondary" href="/minha-conta/">Minha Conta</a>
+        <a class="btn secondary" href="/minha-conta/#book-library">Minha biblioteca</a>
       </div>
     </div>
     <div class="reader-stage">
@@ -31,22 +31,28 @@ import Base from '../../layouts/Base.astro';
     const next=document.querySelector('#reader-next');
 
     const fail=(message)=>{status.textContent=message;viewer.hidden=true;status.hidden=false;};
-    if(!editionId){fail('Livro não informado. Volte para Minha Conta e escolha uma obra.');}
+    if(!editionId){fail('Livro não informado. Volte para sua biblioteca e escolha uma obra.');}
     else {
       const {data:{session}}=await supabase.auth.getSession();
       if(!session?.user){window.location.href='/entrar/?next='+encodeURIComponent(window.location.pathname+window.location.search);}
       else {
+        // A biblioteca serve apenas para enriquecer o título. A autorização final fica
+        // exclusivamente na Edge Function, que valida compra, acesso concedido e administrador.
         const library=await supabase.rpc('my_book_library');
-        const item=(library.data||[]).find(x=>x.edition_id===editionId&&x.has_access);
+        const item=(library.data||[]).find(x=>x.edition_id===editionId);
         if(item?.title) titleEl.textContent=item.title;
-        if(!item){fail('Esta obra não está vinculada à sua conta.');}
-        else if(!item.is_ready){fail('Esta obra já está vinculada à sua conta, mas o arquivo digital ainda está em preparação.');}
+
+        const access=await supabase.functions.invoke('book-epub-access',{body:{edition_id:editionId,access_token:session.access_token}});
+        if(access.error||!access.data?.signed_url){
+          const message=access.data?.error||access.error?.message||'Não foi possível abrir este livro agora.';
+          fail(message);
+        }
+        else if(typeof window.ePub!=='function'){
+          fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
+        }
         else {
-          const access=await supabase.functions.invoke('book-epub-access',{body:{edition_id:editionId,access_token:session.access_token}});
-          if(access.error||!access.data?.signed_url){fail(access.data?.error||access.error?.message||'Não foi possível abrir o livro agora.');}
-          else if(typeof window.ePub!=='function'){fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');}
-          else {
-            status.hidden=true;viewer.hidden=false;
+          status.hidden=true;viewer.hidden=false;
+          try{
             const book=window.ePub(access.data.signed_url);
             const rendition=book.renderTo('epub-viewer',{width:'100%',height:'100%',spread:'auto',flow:'paginated'});
             await rendition.display();
@@ -54,6 +60,9 @@ import Base from '../../layouts/Base.astro';
             prev.addEventListener('click',()=>rendition.prev());
             next.addEventListener('click',()=>rendition.next());
             document.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft')rendition.prev();if(e.key==='ArrowRight')rendition.next();});
+          }catch(err){
+            console.error(err);
+            fail('O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra. Atualize a página e tente novamente.');
           }
         }
       }
