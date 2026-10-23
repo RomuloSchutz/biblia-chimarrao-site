@@ -1,18 +1,25 @@
 /* Preferencias do leitor, tema e ajustes responsivos finais */
-html{color-scheme:light}html[data-theme="dark"]{color-scheme:dark;--bg:#0d1713;--paper:#14231d;--ink:#f4eee4;--muted:#bac3bd;--green:#d7b373;--green2:#e4c58d;--gold:#d5aa62;--line:rgba(236,219,187,.15)}
-body{transition:background-color .2s ease,color .2s ease}
-html[data-theme="dark"] body{background:#0d1713;color:var(--ink)}
-html[data-theme="dark"] section{border-color:var(--line)}
-html[data-theme="dark"] .card,html[data-theme="dark"] .book-card,html[data-theme="dark"] .fact,html[data-theme="dark"] .topic,html[data-theme="dark"] .account-panel,html[data-theme="dark"] .encounter-web,html[data-theme="dark"] .day-web-card{background:linear-gradient(145deg,#182821,#102019);border-color:rgba(226,190,127,.2);box-shadow:0 16px 38px rgba(0,0,0,.22)}
+html{color-scheme:light;--bg:#e8f0ea;--paper:#fffdf8;--ink:#18342a;--muted:#5f7269;--green:#123b31;--green2:#285d48;--gold:#b88945;--line:rgba(18,59,49,.14)}
+body{transition:background-color .2s ease,color .2s ease;background:var(--bg);color:var(--ink)}
+section{background:linear-gradient(180deg,#eaf2ec 0%,#e2ece5 100%);border-color:var(--line)}
+section:nth-of-type(even):not(.dark-section):not(.social-contact-section){background:linear-gradient(180deg,#e3ede6 0%,#dce8e0 100%)}
+.journey-intro,.development-section,.devotional-web-hero,.app-brand-hero,.contact-closing{background:linear-gradient(180deg,#e5efe8,#dbe8df)!important}
+.footer{background:#dbe8df;color:#4f665b}.footer strong{color:#17382f}
+
+html[data-theme="dark"]{color-scheme:dark;--bg:#0b211a;--paper:#142a21;--ink:#f4eee4;--muted:#b9c6bf;--green:#d7b373;--green2:#e4c58d;--gold:#d5aa62;--line:rgba(236,219,187,.15)}
+html[data-theme="dark"] body{background:#0b211a;color:var(--ink)}
+html[data-theme="dark"] section{background:linear-gradient(180deg,#0f2f25,#0b241c);border-color:var(--line)}
+html[data-theme="dark"] section:nth-of-type(even):not(.dark-section):not(.social-contact-section){background:linear-gradient(180deg,#12382b,#0d2a21)}
+html[data-theme="dark"] .card,html[data-theme="dark"] .book-card,html[data-theme="dark"] .fact,html[data-theme="dark"] .topic,html[data-theme="dark"] .account-panel,html[data-theme="dark"] .encounter-web,html[data-theme="dark"] .day-web-card{background:linear-gradient(145deg,#173a2d,#10281f);border-color:rgba(226,190,127,.22);box-shadow:0 16px 38px rgba(0,0,0,.25)}
 html[data-theme="dark"] .card h3,html[data-theme="dark"] .fact strong,html[data-theme="dark"] .store-title{color:#f3dfb8}
-html[data-theme="dark"] .card p,html[data-theme="dark"] .book-card p,html[data-theme="dark"] .lead,html[data-theme="dark"] .library-invite{color:#bdc5c0}
-html[data-theme="dark"] .journey-intro,html[data-theme="dark"] .development-section,html[data-theme="dark"] .devotional-web-hero,html[data-theme="dark"] .app-brand-hero,html[data-theme="dark"] .contact-closing{background:linear-gradient(180deg,#101c17,#0d1713)}
-html[data-theme="dark"] .quote-box{background:#2c2418;border-color:rgba(224,184,112,.28);color:#f1dfbd}
-html[data-theme="dark"] .month-web-card,html[data-theme="dark"] .month-web-card span{background:#14231d!important;border-color:rgba(226,190,127,.2)}
-html[data-theme="dark"] .month-web-card img{background:#101b17!important}
-html[data-theme="dark"] .account-form input,html[data-theme="dark"] .password-form input,html[data-theme="dark"] .setting-select{background:#0e1a15;color:#f4eee4;border-color:rgba(226,190,127,.28)}
+html[data-theme="dark"] .card p,html[data-theme="dark"] .book-card p,html[data-theme="dark"] .lead,html[data-theme="dark"] .library-invite{color:#c0cbc5}
+html[data-theme="dark"] .journey-intro,html[data-theme="dark"] .development-section,html[data-theme="dark"] .devotional-web-hero,html[data-theme="dark"] .app-brand-hero,html[data-theme="dark"] .contact-closing{background:linear-gradient(180deg,#11382b,#0c291f)!important}
+html[data-theme="dark"] .quote-box{background:#19392d;border-color:rgba(224,184,112,.28);color:#f1dfbd}
+html[data-theme="dark"] .month-web-card,html[data-theme="dark"] .month-web-card span{background:#142f25!important;border-color:rgba(226,190,127,.2)}
+html[data-theme="dark"] .month-web-card img{background:#10271f!important}
+html[data-theme="dark"] .account-form input,html[data-theme="dark"] .password-form input,html[data-theme="dark"] .setting-select{background:#0d261d;color:#f4eee4;border-color:rgba(226,190,127,.28)}
 html[data-theme="dark"] .btn.secondary{border-color:#d7b373;color:#f1dfbd}
-html[data-theme="dark"] .footer{color:#b9c1bc}html[data-theme="dark"] .footer strong{color:#f4eee4}
+html[data-theme="dark"] .footer{background:#082019;color:#b9c1bc}html[data-theme="dark"] .footer strong{color:#f4eee4}
 
 /* Minha Conta — configuracoes */
 .account-settings-section{padding:58px 0 0;border-top:1px solid var(--line);margin-top:52px}
@@ -23,18 +30,19 @@ html[data-theme="dark"] .footer{color:#b9c1bc}html[data-theme="dark"] .footer st
 .setting-select,.password-form input{width:100%;padding:13px 14px;border:1px solid rgba(31,42,36,.2);border-radius:14px;background:#fff;font:inherit;color:var(--ink)}
 .setting-help{font-size:.86rem;margin-top:10px}.password-form{display:grid;gap:12px}.password-form .btn{width:max-content;margin-top:4px}
 
-/* Home — hotspots alinhados pela propria arte, nao pela borda inferior */
-.opening-hotspot{top:58.1%!important;bottom:auto!important;height:12.4%!important}
-.opening-hotspot-site{left:25.8%!important;width:19.1%!important}.opening-hotspot-app{left:45.6%!important;width:21.2%!important}
+/* QR sempre limpo, inclusive em navegadores com modo escuro forcado */
+.qr-card{background:linear-gradient(145deg,#123b31,#08271f)!important;color:#fff!important}
+.qr-card img{background:#fff!important;opacity:1!important;filter:contrast(1.35)!important;mix-blend-mode:normal!important;color-scheme:light!important;border:14px solid #fff!important;padding:0!important;box-shadow:0 16px 36px rgba(0,0,0,.22)!important}
+
+/* Home — os antigos hotspots foram removidos; os acessos ficam nos botoes reais abaixo */
+.opening-hotspots,.opening-hotspot{display:none!important}
+.site-opening-actions{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0 28px}
+.site-opening-actions .btn{min-width:210px}
 
 @media(max-width:820px){
   .settings-grid{grid-template-columns:1fr}.settings-card{grid-template-columns:48px 1fr}.setting-icon{width:46px;height:46px;border-radius:15px}
-  .opening-hotspot{top:58%!important;height:13%!important}
-  .opening-hotspot-site{left:25.4%!important;width:19.8%!important}.opening-hotspot-app{left:45.2%!important;width:22%!important}
-  .site-opening-actions{gap:10px!important}.site-opening-actions .btn{min-height:52px;font-weight:800}
+  .site-opening-actions{gap:10px!important}.site-opening-actions .btn{min-height:52px;font-weight:800;min-width:0;width:100%;max-width:360px}
 }
 @media(max-width:520px){
   .settings-card{display:block}.setting-icon{margin-bottom:14px}.password-form .btn{width:100%}
-  .opening-hotspot{top:57.5%!important;height:14%!important}
-  .opening-hotspot-site{left:24.8%!important;width:20.8%!important}.opening-hotspot-app{left:45%!important;width:22.8%!important}
 }
