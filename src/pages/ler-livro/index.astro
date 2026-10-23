@@ -29,6 +29,8 @@ import Base from '../../layouts/Base.astro';
     const titleEl=document.querySelector('#reader-book-title');
     const prev=document.querySelector('#reader-prev');
     const next=document.querySelector('#reader-next');
+    const SUPABASE_URL='https://srabzgokulsiujusbqxl.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY='sb_publishable_TjLHUAq038yLQ2hqqaVZjg__GM4w2Q4';
 
     const fail=(message)=>{status.textContent=message;viewer.hidden=true;status.hidden=false;};
     if(!editionId){fail('Livro não informado. Volte para sua biblioteca e escolha uma obra.');}
@@ -42,17 +44,17 @@ import Base from '../../layouts/Base.astro';
 
         let accessData=null;
         try{
-          const endpoint=`https://srabzgokulsiujusbqxl.supabase.co/functions/v1/book-epub-access`;
-          const response=await fetch(endpoint,{
+          const response=await fetch(`${SUPABASE_URL}/functions/v1/book-epub-access`,{
             method:'POST',
             headers:{
               'Content-Type':'application/json',
               'Authorization':`Bearer ${session.access_token}`,
-              'apikey':import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+              'apikey':SUPABASE_PUBLISHABLE_KEY
             },
-            body:JSON.stringify({edition_id:editionId,access_token:session.access_token})
+            body:JSON.stringify({edition_id:editionId})
           });
-          const payload=await response.json().catch(()=>({}));
+          const contentType=response.headers.get('content-type')||'';
+          const payload=contentType.includes('application/json')?await response.json():{error:await response.text()};
           if(!response.ok||!payload?.signed_url) throw new Error(payload?.error||`Falha ao liberar o livro (${response.status}).`);
           accessData=payload;
         }catch(err){
