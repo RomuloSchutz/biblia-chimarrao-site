@@ -1,0 +1,41 @@
+/* Ajustes visuais de enquadramento — 2026-10-23 */
+
+/* Capas nas páginas individuais: moldura branca uniforme em todos os lados. */
+.book-detail-cover{
+  box-sizing:border-box!important;
+  padding:14px!important;
+  background:#fff!important;
+  border:1px solid rgba(255,255,255,.92)!important;
+  border-radius:24px!important;
+  box-shadow:0 24px 58px rgba(0,0,0,.18)!important;
+  object-fit:contain!important;
+}
+
+/* Foto da página de contato: mesma linguagem visual das capas. */
+.contact-walk-photo{
+  padding:14px!important;
+  background:#fff!important;
+  border:1px solid rgba(255,255,255,.92)!important;
+  border-radius:30px!important;
+  box-shadow:0 24px 58px rgba(0,0,0,.16)!important;
+  overflow:hidden;
+}
+.contact-walk-photo img{
+  width:100%!important;
+  height:auto!important;
+  max-height:500px!important;
+  object-fit:contain!important;
+  background:transparent!important;
+  border-radius:18px!important;
+  box-shadow:none!important;
+}
+
+/* Estado especial da loja para quem já possui acesso ou é administrador. */
+.store-access-label{color:#e6c487!important;font-size:.92rem!important;letter-spacing:.03em}
+.store-cover-card.has-library-access{border-color:rgba(230,196,135,.5)!important;box-shadow:0 16px 38px rgba(0,0,0,.16)!important}
+.prelaunch-admin-actions{display:flex;justify-content:center;margin-top:12px}
+
+@media(max-width:820px){
+  .book-detail-cover{padding:10px!important}
+  .contact-walk-photo{padding:10px!important}
+}
