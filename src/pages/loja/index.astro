@@ -16,17 +16,77 @@ const emBreve=[
 ---
 <Base title="Loja | Bíblia + Chimarrão" description="Compre o acesso anual Bíblia + Chimarrão e livros digitais de Romulo Schutz com a mesma conta usada no aplicativo.">
 <section class="hero compact-hero"><div class="shell split"><div><div class="eyebrow">Loja digital</div><h1>Escolha o que faz sentido para sua caminhada.</h1><p class="lead">Livro e acesso anual são produtos independentes. Você pode adquirir somente um e-book, somente a experiência anual ou combinar os dois.</p><p>A proposta da loja é simples: primeiro conhecer, depois escolher. Cada obra possui uma página própria para que você entenda o tema, a intenção e o caminho de leitura antes da compra.</p></div><div class="card"><div class="eyebrow">Uma conta</div><h3>Compre aqui. Acesse também no aplicativo.</h3><p>As aquisições ficam vinculadas à sua conta. Use o mesmo e-mail e senha no site e no aplicativo para manter sua biblioteca e seus acessos em um único lugar.</p></div></div></section>
-<section><div class="shell"><div class="eyebrow">Disponíveis</div><h2>Leituras para momentos diferentes da caminhada.</h2><p class="lead store-intro">Há livros para compreender o tempo, discernir o mundo, sustentar a esperança e cultivar uma vida de fé mais consciente. Clique em “Conhecer” para entrar na página editorial da obra antes de decidir pela compra.</p><div class="store-cover-grid">{produtos.map(p=><article class="store-cover-card" data-store-card={p.code}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><div class="store-meta"><span class="book-number">{p.tipo}</span><h3 class="store-title">{p.titulo}</h3>{p.isbn&&<small class="store-isbn">ISBN {p.isbn}</small>}<strong class="store-price" data-price={p.code}>Carregando valor...</strong></div><div class="actions"><a class="btn secondary" href={p.href}>Conhecer</a><button class="btn primary buy-button" type="button" data-buy={p.code} disabled>Comprar</button></div></article>)}</div>
-<div class="purchase-consent"><label><input id="purchase-accepted" type="checkbox"/> Li e aceito a <a href="/politicas/#compras" target="_blank">Política de Compra, Cancelamento e Reembolso Digital</a> e a <a href="/politicas/#licenca" target="_blank">Licença de Uso de Conteúdos Digitais</a>.</label><p id="store-message" class="form-message" role="status"></p></div></div></section>
-<section class="development-section"><div class="shell"><div class="eyebrow">Pré-lançamentos</div><h2>Obras que continuam sendo construídas.</h2><p class="lead">Acompanhe os próximos títulos e conheça desde já a trajetória editorial que está sendo preparada para novas leituras.</p><div class="store-cover-grid">{emBreve.map(p=><article class="store-cover-card prelaunch-cover"><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><span class="status-badge">EM BREVE · LANÇAMENTO 2027</span></article>)}</div></div></section>
+<section><div class="shell"><div class="eyebrow">Disponíveis</div><h2>Leituras para momentos diferentes da caminhada.</h2><p class="lead store-intro">Há livros para compreender o tempo, discernir o mundo, sustentar a esperança e cultivar uma vida de fé mais consciente. Clique em “Conhecer” para entrar na página editorial da obra antes de decidir pela compra.</p><div class="store-cover-grid">{produtos.map(p=><article class="store-cover-card" data-store-card={p.code}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><div class="store-meta"><span class="book-number">{p.tipo}</span><h3 class="store-title">{p.titulo}</h3>{p.isbn&&<small class="store-isbn">ISBN {p.isbn}</small>}<strong class="store-price" data-price={p.code}>Carregando valor...</strong></div><div class="actions" data-actions={p.code}><a class="btn secondary" href={p.href}>Conhecer</a><button class="btn primary buy-button" type="button" data-buy={p.code} disabled>Comprar</button></div></article>)}</div>
+<div class="purchase-consent" id="purchase-consent"><label><input id="purchase-accepted" type="checkbox"/> Li e aceito a <a href="/politicas/#compras" target="_blank">Política de Compra, Cancelamento e Reembolso Digital</a> e a <a href="/politicas/#licenca" target="_blank">Licença de Uso de Conteúdos Digitais</a>.</label><p id="store-message" class="form-message" role="status"></p></div></div></section>
+<section class="development-section"><div class="shell"><div class="eyebrow">Pré-lançamentos</div><h2>Obras que continuam sendo construídas.</h2><p class="lead">Acompanhe os próximos títulos e conheça desde já a trajetória editorial que está sendo preparada para novas leituras.</p><div class="store-cover-grid">{emBreve.map(p=><article class="store-cover-card prelaunch-cover" data-prelaunch-title={p.titulo}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><span class="status-badge">EM BREVE · LANÇAMENTO 2027</span><div class="prelaunch-admin-actions" data-prelaunch-actions={p.titulo}></div></article>)}</div></div></section>
 <section><div class="shell split"><div><div class="eyebrow">Duas portas de entrada</div><h2>Site e aplicativo trabalham juntos.</h2></div><div><p class="lead">Quem quiser apenas um livro compra apenas o livro. Quem adquirir a Edição 2027 pode viver o devocional no aplicativo e também lê-lo pelo site usando a mesma conta.</p><p>Você escolhe a forma de entrar; o conteúdo permanece conectado à sua caminhada.</p><div class="actions"><a class="btn primary" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir aplicativo</a><a class="btn secondary" href="/devocional/">Ler no site</a></div></div></div></section>
 <script>
  import { supabase } from '../../lib/supabase-browser.js';
- const message=document.querySelector('#store-message'),accepted=document.querySelector('#purchase-accepted');
- const {data:catalog,error}=await supabase.rpc('get_commercial_catalog');
+ const message=document.querySelector('#store-message'),accepted=document.querySelector('#purchase-accepted'),consent=document.querySelector('#purchase-consent');
+ const {data:catalog}=await supabase.rpc('get_commercial_catalog');
  const products=Object.fromEntries((catalog||[]).map(p=>[p.code,p]));
- document.querySelectorAll('[data-price]').forEach(el=>{const p=products[el.dataset.price];el.textContent=p&&p.is_active?new Intl.NumberFormat('pt-BR',{style:'currency',currency:p.currency||'BRL'}).format(p.amount_cents/100):'Indisponível';});
- document.querySelectorAll('[data-buy]').forEach(button=>{const p=products[button.dataset.buy];button.disabled=!p?.is_active;button.addEventListener('click',()=>purchase(button.dataset.buy));});
- async function purchase(code){message.textContent='';const {data:{session}}=await supabase.auth.getSession();if(!session){message.textContent='Entre na sua conta antes de comprar.';setTimeout(()=>window.location.href='/entrar/',700);return;}if(!accepted.checked){message.textContent='Leia e aceite as condições de compra e licença digital para continuar.';return;}const button=document.querySelector(`[data-buy="${code}"]`);button.disabled=true;message.textContent='Preparando checkout seguro do Mercado Pago...';const {data,error}=await supabase.functions.invoke('mercado-pago-create-order',{body:{product_code:code,accepted:true,access_token:session.access_token}});if(error||!data?.checkout_url){message.textContent='Não foi possível iniciar o checkout. Tente novamente.';button.disabled=false;return;}window.location.href=data.checkout_url;}
+ const {data:{session}}=await supabase.auth.getSession();
+ let isAdmin=false;
+ let library=[];
+ if(session?.user){
+   const [adminResult,libraryResult]=await Promise.all([supabase.rpc('is_app_admin'),supabase.rpc('my_book_library')]);
+   isAdmin=adminResult.data===true;
+   library=libraryResult.data||[];
+ }
+ const byEdition=new Map(library.filter(x=>x.edition_id).map(x=>[x.edition_id,x]));
+ const normalize=(value='')=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,' ').trim().toLowerCase();
+ const byTitle=new Map(library.map(x=>[normalize(x.title),x]));
+
+ document.querySelectorAll('[data-price]').forEach(el=>{
+   const code=el.dataset.price,p=products[code];
+   const item=p?.edition_id?byEdition.get(p.edition_id):null;
+   const hasAccess=isAdmin||(item?.has_access===true);
+   if(hasAccess){el.textContent=isAdmin?'ACESSO DO AUTOR':'JÁ ADQUIRIDO';el.classList.add('store-access-label');return;}
+   el.textContent=p&&p.is_active?new Intl.NumberFormat('pt-BR',{style:'currency',currency:p.currency||'BRL'}).format(p.amount_cents/100):'Indisponível';
+ });
+
+ document.querySelectorAll('[data-buy]').forEach(button=>{
+   const code=button.dataset.buy,p=products[code],card=document.querySelector(`[data-store-card="${code}"]`),actions=document.querySelector(`[data-actions="${code}"]`);
+   const item=p?.edition_id?byEdition.get(p.edition_id):null;
+   const hasBookAccess=isAdmin||(item?.has_access===true);
+   if(code==='app_biblia_chimarrao'&&isAdmin){
+     button.remove();
+     actions.insertAdjacentHTML('beforeend','<a class="btn primary" href="/devocional/">Abrir devocional</a>');
+     card?.classList.add('has-library-access');
+     return;
+   }
+   if(hasBookAccess&&item?.is_ready){
+     button.remove();
+     actions.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);
+     card?.classList.add('has-library-access');
+     return;
+   }
+   button.disabled=!p?.is_active;
+   button.addEventListener('click',()=>purchase(code));
+ });
+
+ if(isAdmin){
+   consent.hidden=true;
+   document.querySelectorAll('[data-prelaunch-title]').forEach(card=>{
+     const title=card.dataset.prelaunchTitle;
+     const item=byTitle.get(normalize(title));
+     if(item?.is_ready){
+       card.querySelector('.status-badge').textContent='ACESSO DO AUTOR';
+       card.querySelector(`[data-prelaunch-actions="${CSS.escape(title)}"]`)?.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);
+       card.classList.add('has-library-access');
+     }
+   });
+ }
+
+ async function purchase(code){
+   message.textContent='';
+   const {data:{session:currentSession}}=await supabase.auth.getSession();
+   if(!currentSession){message.textContent='Entre na sua conta antes de comprar.';setTimeout(()=>window.location.href='/entrar/',700);return;}
+   if(!accepted.checked){message.textContent='Leia e aceite as condições de compra e licença digital para continuar.';return;}
+   const button=document.querySelector(`[data-buy="${code}"]`);button.disabled=true;message.textContent='Preparando checkout seguro do Mercado Pago...';
+   const {data,error}=await supabase.functions.invoke('mercado-pago-create-order',{body:{product_code:code,accepted:true,access_token:currentSession.access_token}});
+   if(error||!data?.checkout_url){message.textContent='Não foi possível iniciar o checkout. Tente novamente.';button.disabled=false;return;}
+   window.location.href=data.checkout_url;
+ }
 </script>
 </Base>
