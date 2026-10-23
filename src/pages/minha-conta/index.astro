@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
 ---
-<Base title="Minha Conta | Bíblia + Chimarrão" description="Consulte o acesso ao devocional e aos livros adquiridos usando a mesma conta do site e do aplicativo Bíblia + Chimarrão.">
+<Base title="Minha Conta | Bíblia + Chimarrão" description="Consulte o acesso ao devocional, livros adquiridos e configurações da sua conta Bíblia + Chimarrão.">
 <section class="hero account-hero"><div class="shell"><div class="eyebrow">Área do leitor</div><h1>Minha Conta</h1><p class="lead">Seu acesso acompanha você. Compras feitas no site ou no aplicativo ficam vinculadas à mesma conta.</p></div></section>
 <section><div class="shell"><div id="account-loading" class="account-panel"><p>Verificando sua conta...</p></div>
 <div id="account-guest" class="account-panel" hidden><h2>Entre para continuar.</h2><p>Use o mesmo e-mail e senha do aplicativo Bíblia + Chimarrão.</p><div class="actions"><a class="btn primary" href="/entrar/">Entrar ou criar conta</a></div></div>
@@ -14,6 +14,10 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
     <article class="card"><div class="eyebrow">Aplicativo</div><h3>Continue onde preferir.</h3><p>A mesma conta funciona no aplicativo. Seus direitos de acesso são consultados no mesmo cadastro.</p><div class="actions"><a class="btn secondary" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir aplicativo ↗</a></div></article>
   </div>
   <section class="account-library-section"><div class="eyebrow">Biblioteca vinculada à conta</div><h2>Livros adquiridos</h2><div id="book-library" class="book-grid two"></div></section>
+  <section class="account-settings-section" id="configuracoes"><div class="eyebrow">Preferências da conta</div><h2>Configurações</h2><div class="settings-grid">
+    <article class="card settings-card"><div class="setting-icon" aria-hidden="true">◐</div><div><h3>Aparência do site</h3><p>Escolha como o Bíblia + Chimarrão deve aparecer neste aparelho.</p><label class="setting-label" for="theme-select">Tema</label><select id="theme-select" class="setting-select"><option value="system">Usar configuração do sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select><p class="setting-help">A preferência fica salva neste navegador e pode ser alterada quando quiser.</p></div></article>
+    <article class="card settings-card"><div class="setting-icon" aria-hidden="true">✦</div><div><h3>Alterar senha</h3><p>Defina uma nova senha para a mesma conta usada no site e no aplicativo.</p><form id="password-form" class="password-form"><label>Nova senha<input id="new-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo de 8 caracteres"/></label><label>Confirmar nova senha<input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Repita a nova senha"/></label><button class="btn primary" type="submit">Atualizar senha</button><p id="password-message" class="form-message" aria-live="polite"></p></form></div></article>
+  </div></section>
 </div></div></section>
 <script>
  import { supabase } from '../../lib/supabase-browser.js';
@@ -30,5 +34,23 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
  }
  function escapeHtml(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
  document.querySelector('#account-logout')?.addEventListener('click',async()=>{await supabase.auth.signOut();window.location.href='/entrar/';});
+
+ const themeSelect=document.querySelector('#theme-select');
+ const media=window.matchMedia('(prefers-color-scheme: dark)');
+ const applyTheme=(pref)=>{const dark=pref==='dark'||(pref==='system'&&media.matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.dataset.themePreference=pref;localStorage.setItem('bc-theme',pref);};
+ if(themeSelect){themeSelect.value=localStorage.getItem('bc-theme')||'system';themeSelect.addEventListener('change',()=>applyTheme(themeSelect.value));}
+
+ document.querySelector('#password-form')?.addEventListener('submit',async(e)=>{
+   e.preventDefault();
+   const pass=document.querySelector('#new-password').value;
+   const confirm=document.querySelector('#confirm-password').value;
+   const msg=document.querySelector('#password-message');
+   if(pass.length<8){msg.textContent='Use pelo menos 8 caracteres.';return;}
+   if(pass!==confirm){msg.textContent='As duas senhas precisam ser iguais.';return;}
+   msg.textContent='Atualizando...';
+   const {error}=await supabase.auth.updateUser({password:pass});
+   if(error){msg.textContent='Não foi possível alterar a senha: '+error.message;return;}
+   e.currentTarget.reset();msg.textContent='Senha atualizada com sucesso.';
+ });
 </script>
 </Base>
