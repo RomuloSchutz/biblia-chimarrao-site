@@ -7,6 +7,8 @@ import '../styles/account-theme.css';
 const { title, description } = Astro.props;
 const siteUrl = 'https://biblia-chimarrao-site.pages.dev';
 const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
+const appIcon192 = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/icon-192.png';
+const appIcon512 = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/icon-512.png';
 const facebookUrl = 'https://www.facebook.com/romuloschutz';
 const instagramUrl = 'https://www.instagram.com/romuloschutz/';
 const youtubeUrl = 'https://www.youtube.com/@romuloschutz';
@@ -21,7 +23,7 @@ const structuredData = {
   ]
 };
 ---
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content="index,follow,max-image-preview:large"/><meta name="theme-color" content="#123b31"/><link rel="canonical" href={canonical}/><link rel="manifest" href="/site.webmanifest"/><link rel="icon" type="image/webp" href="/carimbo-site.webp"/><link rel="shortcut icon" type="image/webp" href="/carimbo-site.webp"/><link rel="apple-touch-icon" href="/carimbo-site.webp"/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:site_name" content="Bíblia + Chimarrão"/><meta property="og:locale" content="pt_BR"/><meta name="twitter:card" content="summary_large_image"/><script type="application/ld+json" set:html={JSON.stringify(structuredData)}/><script is:inline>
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content="index,follow,max-image-preview:large"/><meta name="theme-color" content="#123b31"/><link rel="canonical" href={canonical}/><link rel="manifest" href="/site.webmanifest"/><link rel="icon" type="image/png" sizes="192x192" href={appIcon192}/><link rel="shortcut icon" type="image/png" href={appIcon192}/><link rel="apple-touch-icon" sizes="192x192" href={appIcon192}/><link rel="apple-touch-icon" sizes="512x512" href={appIcon512}/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:site_name" content="Bíblia + Chimarrão"/><meta property="og:locale" content="pt_BR"/><meta name="twitter:card" content="summary_large_image"/><script type="application/ld+json" set:html={JSON.stringify(structuredData)}/><script is:inline>
 (function(){
   const mq=window.matchMedia('(prefers-color-scheme: dark)');
   const apply=()=>{
