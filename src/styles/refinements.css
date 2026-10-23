@@ -56,3 +56,42 @@ h1,h2,.entre-mark{font-weight:700;letter-spacing:-.04em}
 
 @media(max-width:900px){.social-mini-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.app-brand-grid{grid-template-columns:1fr}.app-brand-visual-compact{max-width:620px;margin:auto;justify-self:center}.project-author-photo-full{max-width:350px!important}.entre-mark{font-size:clamp(3.5rem,13vw,5.8rem)}.entre-feature{padding:56px 0}}
 @media(max-width:620px){.social-contact-panel{padding:22px 14px}.social-contact-panel>div:first-child{display:block}.social-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.social-mini-icon{width:64px;height:64px}.social-mini svg{width:40px;height:40px}.books-main-title span{white-space:normal}.devotional-front-cover{max-width:270px}.app-brand-copy h1{font-size:clamp(2.6rem,13vw,4rem)}.project-author-photo-full{max-width:300px!important}.store-title{font-size:.92rem}.entre-mark{font-size:clamp(3.2rem,18vw,4.8rem);margin-bottom:12px}.site-opening-art::after{height:34%}.compact-hero,.contact-closing,.development-section,.entre-feature{padding-top:50px;padding-bottom:50px}}
+
+/* Ajustes 2026-10-23 — trilogia e hero */
+.development-cover-card{
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  overflow:visible!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.development-cover-card img{display:block;width:100%;height:auto}
+.development-cover-card .cover-status{
+  position:static!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  width:100%;
+  max-width:210px;
+  margin:12px 0 0!important;
+  padding:9px 12px;
+  justify-content:center;
+  text-align:center;
+  line-height:1.25;
+  border-radius:12px;
+}
+.site-opening-art::after{
+  height:40%!important;
+  background:linear-gradient(to bottom,rgba(28,21,16,0) 0%,rgba(28,21,16,.30) 10%,rgba(28,21,16,.90) 26%,#1c1510 40%,#1c1510 100%)!important;
+}
+@media(max-width:620px){
+  .site-opening-art::after{
+    height:44%!important;
+    background:linear-gradient(to bottom,rgba(28,21,16,0) 0%,rgba(28,21,16,.38) 8%,rgba(28,21,16,.94) 22%,#1c1510 36%,#1c1510 100%)!important;
+  }
+  .development-cover-card .cover-status{max-width:190px;font-size:.62rem}
+}
+
