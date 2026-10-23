@@ -3,6 +3,9 @@
 .card::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#123b31,#b78743,#123b31)}
 .card h3{color:#173f31}.card:hover{border-color:rgba(167,121,61,.34);box-shadow:0 18px 42px rgba(24,63,50,.11)}
 
+/* ENTRE — elemento editorial recorrente */
+.entre-feature{position:relative;overflow:hidden}.entre-mark{font-family:Georgia,"Times New Roman",serif;font-weight:900;font-size:clamp(5rem,12vw,10rem);line-height:.76;letter-spacing:-.065em;color:#123b31;margin:0 0 24px;text-transform:uppercase}.entre-mark-light{color:#e6c487;text-shadow:0 10px 32px rgba(0,0,0,.22)}.entre-mark-soft{color:rgba(18,59,49,.16);margin-bottom:8px}.entre-inline{display:inline-block;font-weight:900;color:#a7793d;letter-spacing:.02em}
+
 /* Contato — cinco canais compactos como no aplicativo */
 .social-contact-section{background:linear-gradient(145deg,#102f27,#0a231d);padding:54px 0}
 .social-contact-panel{border:1px solid rgba(230,196,135,.42);border-radius:28px;padding:30px;background:radial-gradient(circle at 80% 15%,rgba(190,137,64,.18),transparent 34%),rgba(5,28,23,.66);box-shadow:0 24px 60px rgba(4,22,18,.24)}
@@ -32,7 +35,7 @@
 .month-web-card{border:1px solid rgba(52,73,58,.14);background:#fffaf1}.month-web-card img{width:100%!important;height:auto!important;aspect-ratio:3/2!important;object-fit:contain!important;background:#f5efe4!important}.month-web-card span{background:#fffaf1}
 
 /* Abertura e fotografia institucional */
-.site-opening-art img{max-height:680px;object-fit:contain}.project-author-photo-full{max-width:430px!important;justify-self:center}.project-author-photo-full img{width:100%!important;height:auto!important;max-height:700px!important;object-fit:contain!important;background:transparent!important}.author-conversation-feature{max-height:620px;object-fit:cover;object-position:center}
+.site-opening-art{position:relative}.site-opening-art img{max-height:680px;object-fit:contain}.site-opening-art::after{content:"";position:absolute;left:0;right:0;bottom:0;height:29%;pointer-events:none;background:linear-gradient(to bottom,rgba(28,21,16,0) 0%,rgba(28,21,16,.58) 44%,rgba(28,21,16,.96) 78%,#1c1510 100%)}.project-author-photo-full{max-width:430px!important;justify-self:center}.project-author-photo-full img{width:100%!important;height:auto!important;max-height:700px!important;object-fit:contain!important;background:transparent!important}.author-conversation-feature{max-height:620px;object-fit:cover;object-position:center}
 
-@media(max-width:900px){.social-mini-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.app-brand-grid{grid-template-columns:1fr}.app-brand-visual-compact{max-width:620px;margin:auto;justify-self:center}.project-author-photo-full{max-width:350px!important}}
-@media(max-width:620px){.social-contact-panel{padding:22px 14px}.social-contact-panel>div:first-child{display:block}.social-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.social-mini-icon{width:64px;height:64px}.social-mini svg{width:40px;height:40px}.books-main-title span{white-space:normal}.devotional-front-cover{max-width:270px}.app-brand-copy h1{font-size:clamp(2.6rem,13vw,4rem)}.project-author-photo-full{max-width:300px!important}.store-title{font-size:.92rem}}
+@media(max-width:900px){.social-mini-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.app-brand-grid{grid-template-columns:1fr}.app-brand-visual-compact{max-width:620px;margin:auto;justify-self:center}.project-author-photo-full{max-width:350px!important}.entre-mark{font-size:clamp(4.4rem,16vw,7rem)}}
+@media(max-width:620px){.social-contact-panel{padding:22px 14px}.social-contact-panel>div:first-child{display:block}.social-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.social-mini-icon{width:64px;height:64px}.social-mini svg{width:40px;height:40px}.books-main-title span{white-space:normal}.devotional-front-cover{max-width:270px}.app-brand-copy h1{font-size:clamp(2.6rem,13vw,4rem)}.project-author-photo-full{max-width:300px!important}.store-title{font-size:.92rem}.entre-mark{font-size:clamp(3.8rem,22vw,5.8rem);margin-bottom:16px}.site-opening-art::after{height:34%}}
