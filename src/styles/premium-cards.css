@@ -1,0 +1,115 @@
+/* Acabamento premium — cartões editoriais e alinhamento da abertura */
+
+/* Cards institucionais: mais profundidade, detalhe e identidade sem perder leveza */
+.card,
+.account-panel,
+.account-access-grid .card,
+.books-hero .card,
+.store-intro-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.card {
+  border: 1px solid rgba(18,59,49,.16) !important;
+  border-radius: 26px !important;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(210,166,91,.16), transparent 28%),
+    linear-gradient(145deg,#fffdf8 0%,#f7f1e7 64%,#edf4ef 100%) !important;
+  box-shadow:
+    0 20px 48px rgba(18,59,49,.08),
+    inset 0 1px 0 rgba(255,255,255,.88) !important;
+  overflow: hidden;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.card::before {
+  content:"";
+  position:absolute;
+  left:0; right:0; top:0;
+  height:5px;
+  background:linear-gradient(90deg,#123b31 0%,#c59a55 48%,#123b31 100%) !important;
+  z-index:2;
+}
+
+.card::after {
+  content:"";
+  position:absolute;
+  width:86px;
+  height:86px;
+  right:-34px;
+  top:-34px;
+  border:1px solid rgba(169,121,61,.20);
+  border-radius:50%;
+  box-shadow:0 0 0 12px rgba(169,121,61,.045),0 0 0 24px rgba(18,59,49,.025);
+  pointer-events:none;
+  z-index:-1;
+}
+
+.card:hover {
+  transform:translateY(-3px);
+  border-color:rgba(169,121,61,.34) !important;
+  box-shadow:0 25px 56px rgba(18,59,49,.12),inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+
+.card h3 { color:#123b31 !important; }
+.card .eyebrow { color:#a7793d; }
+.card p { position:relative; z-index:1; }
+
+/* Cards de resumo da área do leitor seguem a mesma identidade premium */
+.account-access-grid .card {
+  min-height: 100%;
+  padding: 30px 30px 28px;
+}
+.account-access-grid .card .actions { margin-top:22px; }
+
+/* Hotspots da arte de abertura: coordenadas proporcionais ao desenho real */
+.site-opening-art { position:relative; }
+.opening-hotspots { position:absolute; inset:0; pointer-events:none; }
+.opening-hotspot {
+  position:absolute !important;
+  top:57.6% !important;
+  bottom:auto !important;
+  height:12.6% !important;
+  border-radius:999px;
+  pointer-events:auto;
+  outline:0;
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+.opening-hotspot-site { left:26.2% !important; width:18.6% !important; }
+.opening-hotspot-app  { left:45.5% !important; width:21.7% !important; }
+.opening-hotspot:hover,
+.opening-hotspot:focus-visible {
+  background:rgba(230,196,135,.06) !important;
+  box-shadow:inset 0 0 0 2px rgba(238,205,148,.45) !important;
+}
+
+/* Leitor de e-book no site */
+.reader-shell { max-width:1180px; margin:0 auto; padding:34px 24px 54px; }
+.reader-toolbar {
+  display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  margin-bottom:18px; padding:14px 16px;
+  border:1px solid rgba(18,59,49,.16); border-radius:20px;
+  background:linear-gradient(145deg,#fffdf8,#f0e9dd);
+  box-shadow:0 14px 34px rgba(18,59,49,.08);
+}
+.reader-toolbar strong { font-family:Georgia,"Times New Roman",serif; color:#123b31; font-size:1.08rem; }
+.reader-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.reader-stage {
+  min-height:72vh; border-radius:24px; overflow:hidden;
+  border:1px solid rgba(18,59,49,.15); background:#fffdf8;
+  box-shadow:0 24px 58px rgba(18,59,49,.10);
+}
+#epub-viewer { width:100%; height:72vh; }
+.reader-status { padding:28px; color:#5b655f; }
+.reader-stage iframe { border:0 !important; }
+
+@media(max-width:820px){
+  .card { border-radius:22px !important; }
+  .account-access-grid .card { padding:24px 22px; }
+  .opening-hotspot { top:57.4% !important; height:13% !important; }
+  .reader-shell { padding:22px 14px 40px; }
+  .reader-stage,#epub-viewer { height:68vh; min-height:68vh; }
+}
