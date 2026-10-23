@@ -3,8 +3,26 @@
 .card::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#123b31,#b78743,#123b31)}
 .card h3{color:#173f31}.card:hover{border-color:rgba(167,121,61,.34);box-shadow:0 18px 42px rgba(24,63,50,.11)}
 
-/* ENTRE — elemento editorial recorrente */
-.entre-feature{position:relative;overflow:hidden}.entre-mark{font-family:Georgia,"Times New Roman",serif;font-weight:900;font-size:clamp(5rem,12vw,10rem);line-height:.76;letter-spacing:-.065em;color:#123b31;margin:0 0 24px;text-transform:uppercase}.entre-mark-light{color:#e6c487;text-shadow:0 10px 32px rgba(0,0,0,.22)}.entre-mark-soft{color:rgba(18,59,49,.16);margin-bottom:8px}.entre-inline{display:inline-block;font-weight:900;color:#a7793d;letter-spacing:.02em}
+/* Padrao tipografico editorial — mesma familia e proporcao em todas as paginas */
+h1,h2,h3,.entre-mark,.brand,.journey-steps strong,.quote-box,.qr-card strong,.month-web-card strong,.encounter-block blockquote{font-family:Georgia,"Times New Roman",serif}
+h1,h2,.entre-mark{font-weight:700;letter-spacing:-.04em}
+
+/* ENTRE — destaque recorrente, sem romper o padrão dos titulos */
+.entre-feature{position:relative;overflow:hidden;padding:68px 0}
+.entre-feature .split{align-items:center}
+.entre-mark{font-size:clamp(3.8rem,7.2vw,6.4rem);line-height:.92;color:#123b31;margin:0 0 16px;text-transform:uppercase}
+.entre-mark-light{color:#e6c487;text-shadow:0 8px 26px rgba(0,0,0,.18)}
+.entre-mark-soft{color:rgba(18,59,49,.16);margin-bottom:10px}
+.entre-inline{display:inline-block;font-weight:700;color:#a7793d;letter-spacing:-.01em}
+.entre-feature h2{font-size:clamp(2.15rem,4.4vw,3.8rem);line-height:1.06;margin-bottom:14px}
+.entre-feature .eyebrow{margin-bottom:10px}
+.entre-feature .lead{margin-top:0;margin-bottom:0}
+
+/* Ritmo vertical — evita blocos altos com areas vazias */
+.compact-hero{padding-top:68px;padding-bottom:62px}
+.contact-closing{background:linear-gradient(180deg,#f5f0e8,#eee5d8);padding:68px 0}
+.contact-closing .split{align-items:center}
+.development-section{padding-top:68px;padding-bottom:68px}
 
 /* Contato — cinco canais compactos como no aplicativo */
 .social-contact-section{background:linear-gradient(145deg,#102f27,#0a231d);padding:54px 0}
@@ -16,7 +34,6 @@
 .social-mini-icon{width:72px;height:72px;border-radius:18px;display:grid;place-items:center;background:rgba(255,255,255,.1);box-shadow:0 10px 28px rgba(0,0,0,.2)}
 .social-mini svg{width:45px;height:45px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.social-facebook .social-mini-icon{background:#1877F2}.social-instagram .social-mini-icon{background:linear-gradient(135deg,#405DE6,#833AB4,#E1306C,#F77737)}.social-youtube .social-mini-icon{background:#f00000}.social-whatsapp .social-mini-icon{background:#25D366}.social-email .social-mini-icon{background:#9c3146}
 .social-mini strong{font-family:Georgia,"Times New Roman",serif;font-size:1rem;color:#f8e3b3}.social-mini small{font-size:.74rem;line-height:1.25;color:rgba(255,255,255,.8);overflow-wrap:anywhere}
-.contact-closing{background:linear-gradient(180deg,#f5f0e8,#eee5d8)}
 
 /* Página Aplicativo */
 .app-brand-hero{padding:58px 0;background:linear-gradient(145deg,#f4eee4,#edf2ed)}
@@ -37,5 +54,5 @@
 /* Abertura e fotografia institucional */
 .site-opening-art{position:relative}.site-opening-art img{max-height:680px;object-fit:contain}.site-opening-art::after{content:"";position:absolute;left:0;right:0;bottom:0;height:29%;pointer-events:none;background:linear-gradient(to bottom,rgba(28,21,16,0) 0%,rgba(28,21,16,.58) 44%,rgba(28,21,16,.96) 78%,#1c1510 100%)}.project-author-photo-full{max-width:430px!important;justify-self:center}.project-author-photo-full img{width:100%!important;height:auto!important;max-height:700px!important;object-fit:contain!important;background:transparent!important}.author-conversation-feature{max-height:620px;object-fit:cover;object-position:center}
 
-@media(max-width:900px){.social-mini-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.app-brand-grid{grid-template-columns:1fr}.app-brand-visual-compact{max-width:620px;margin:auto;justify-self:center}.project-author-photo-full{max-width:350px!important}.entre-mark{font-size:clamp(4.4rem,16vw,7rem)}}
-@media(max-width:620px){.social-contact-panel{padding:22px 14px}.social-contact-panel>div:first-child{display:block}.social-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.social-mini-icon{width:64px;height:64px}.social-mini svg{width:40px;height:40px}.books-main-title span{white-space:normal}.devotional-front-cover{max-width:270px}.app-brand-copy h1{font-size:clamp(2.6rem,13vw,4rem)}.project-author-photo-full{max-width:300px!important}.store-title{font-size:.92rem}.entre-mark{font-size:clamp(3.8rem,22vw,5.8rem);margin-bottom:16px}.site-opening-art::after{height:34%}}
+@media(max-width:900px){.social-mini-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.app-brand-grid{grid-template-columns:1fr}.app-brand-visual-compact{max-width:620px;margin:auto;justify-self:center}.project-author-photo-full{max-width:350px!important}.entre-mark{font-size:clamp(3.5rem,13vw,5.8rem)}.entre-feature{padding:56px 0}}
+@media(max-width:620px){.social-contact-panel{padding:22px 14px}.social-contact-panel>div:first-child{display:block}.social-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.social-mini-icon{width:64px;height:64px}.social-mini svg{width:40px;height:40px}.books-main-title span{white-space:normal}.devotional-front-cover{max-width:270px}.app-brand-copy h1{font-size:clamp(2.6rem,13vw,4rem)}.project-author-photo-full{max-width:300px!important}.store-title{font-size:.92rem}.entre-mark{font-size:clamp(3.2rem,18vw,4.8rem);margin-bottom:12px}.site-opening-art::after{height:34%}.compact-hero,.contact-closing,.development-section,.entre-feature{padding-top:50px;padding-bottom:50px}}
