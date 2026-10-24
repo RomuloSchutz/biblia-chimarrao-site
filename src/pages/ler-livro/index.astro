@@ -103,48 +103,53 @@ import Base from '../../layouts/Base.astro';
               const root = doc.documentElement;
               const body = doc.body;
               if (!root || !body) return;
-              const meta = doc.querySelector('meta[name="viewport"]');
-              const viewport = meta?.getAttribute('content') || '';
+              const viewport = doc.querySelector('meta[name="viewport"]')?.getAttribute('content') || '';
               const widthMatch = viewport.match(/width\s*=\s*([0-9.]+)/i);
               const heightMatch = viewport.match(/height\s*=\s*([0-9.]+)/i);
-              const declaredW = widthMatch ? Number(widthMatch[1]) : 0;
-              const declaredH = heightMatch ? Number(heightMatch[1]) : 0;
               const svg = doc.querySelector('svg[viewBox]');
               const vb = svg?.getAttribute('viewBox')?.trim().split(/[\s,]+/).map(Number) || [];
-              const svgW = vb.length === 4 ? vb[2] : 0;
-              const svgH = vb.length === 4 ? vb[3] : 0;
-              const fixedW = declaredW || svgW;
-              const fixedH = declaredH || svgH;
-              const looksFixed = Boolean(fixedW && fixedH) || /rendition:layout[^;]*pre-paginated/i.test(doc.documentElement.outerHTML.slice(0,4000));
+              const looksFixed = Boolean((widthMatch && heightMatch) || vb.length === 4);
               if (!looksFixed) return;
 
-              const frameW = Math.max(contents.window.innerWidth,1);
-              const frameH = Math.max(contents.window.innerHeight,1);
-              const pageW = fixedW || Math.max(body.scrollWidth,root.scrollWidth,1);
-              const pageH = fixedH || Math.max(body.scrollHeight,root.scrollHeight,1);
-              const scale = Math.min((frameW * .94) / pageW,(frameH * .94) / pageH);
-              if (!Number.isFinite(scale) || scale <= 0) return;
-
+              // O EPUB.js já pode aplicar uma escala própria aos EPUBs pré-paginados.
+              // No celular medimos a página como ela realmente ficou na tela e ampliamos
+              // apenas o necessário para ocupar a área útil, evitando uma segunda redução.
+              body.style.transform = 'none';
+              body.style.position = 'static';
+              body.style.width = '';
+              body.style.height = '';
+              body.style.margin = '0';
+              body.style.padding = '0';
+              body.style.overflow = 'visible';
               root.style.width = '100%';
               root.style.height = '100%';
               root.style.overflow = 'hidden';
-              body.style.position = 'absolute';
-              body.style.left = '50%';
-              body.style.top = '50%';
-              body.style.width = `${pageW}px`;
-              body.style.height = `${pageH}px`;
-              body.style.margin = '0';
-              body.style.padding = '0';
-              body.style.transformOrigin = 'center center';
-              body.style.transform = `translate(-50%, -50%) scale(${scale})`;
-              body.style.overflow = 'hidden';
+
+              requestAnimationFrame(() => {
+                const visual = doc.querySelector('svg, img, [style*="position: absolute"], body > div') || body;
+                const rect = visual.getBoundingClientRect();
+                if (!rect.width || !rect.height) return;
+                const frameW = Math.max(contents.window.innerWidth,1);
+                const frameH = Math.max(contents.window.innerHeight,1);
+                const scale = Math.min((frameW * .92) / rect.width,(frameH * .92) / rect.height);
+                if (!Number.isFinite(scale) || scale <= 0) return;
+
+                body.style.position = 'absolute';
+                body.style.left = '50%';
+                body.style.top = '50%';
+                body.style.width = `${rect.width}px`;
+                body.style.height = `${rect.height}px`;
+                body.style.transformOrigin = 'center center';
+                body.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                body.style.overflow = 'visible';
+              });
             });
           } catch (e) { console.warn('epub-mobile-fit',e); }
         };
 
-        rendition.on('rendered',() => requestAnimationFrame(fitFixedLayout));
+        rendition.on('rendered',() => setTimeout(fitFixedLayout,60));
         await rendition.display(firstSection.href);
-        requestAnimationFrame(fitFixedLayout);
+        setTimeout(fitFixedLayout,80);
         status.hidden = true;
         prev.disabled = false;
         next.disabled = false;
