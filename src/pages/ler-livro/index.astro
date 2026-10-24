@@ -29,6 +29,8 @@ import Base from '../../layouts/Base.astro';
     const titleEl=document.querySelector('#reader-book-title');
     const prev=document.querySelector('#reader-prev');
     const next=document.querySelector('#reader-next');
+    const functionUrl='https://srabzgokulsiujusbqxl.supabase.co/functions/v1/book-epub-access';
+    const publishableKey='sb_publishable_TjLHUAq038yLQ2hqqaVZjg__GM4w2Q4';
 
     const fail=(message)=>{status.textContent=message;viewer.hidden=true;status.hidden=false;};
     if(!editionId){fail('Livro não informado. Volte para sua biblioteca e escolha uma obra.');}
@@ -42,10 +44,19 @@ import Base from '../../layouts/Base.astro';
 
         let accessData=null;
         try{
-          const {data,error}=await supabase.functions.invoke('book-epub-access',{
-            body:{edition_id:editionId}
+          // A Edge Function faz a autenticação internamente. O token segue no corpo,
+          // evitando que o gateway tente validar novamente o JWT do usuário.
+          const response=await fetch(functionUrl,{
+            method:'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'apikey':publishableKey
+            },
+            body:JSON.stringify({edition_id:editionId,access_token:session.access_token})
           });
-          if(error) throw error;
+          const contentType=response.headers.get('content-type')||'';
+          const data=contentType.includes('application/json')?await response.json():null;
+          if(!response.ok) throw new Error(data?.error||`Não foi possível liberar este livro (${response.status}).`);
           if(!data?.signed_url) throw new Error(data?.error||'O servidor não liberou o arquivo deste livro.');
           accessData=data;
         }catch(err){
