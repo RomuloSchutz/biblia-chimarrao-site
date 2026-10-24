@@ -117,6 +117,9 @@ import Base from '../../layouts/Base.astro';
     let chunkIndex=0;
     let chunkOffset=0;
     let activeUtterance=null;
+    let utteranceStartedAt=0;
+    let utteranceBaseOffset=0;
+    let audioAutoAdvance=false;
 
     const voiceLooksFemale=(name='')=>/female|femin|luciana|francisca|maria|helena|leticia|camila|vitoria|brenda/i.test(name);
     const voiceLooksMale=(name='')=>/male|mascul|antonio|daniel|felipe|ricardo|thiago|paulo/i.test(name);
@@ -137,37 +140,103 @@ import Base from '../../layouts/Base.astro';
       return voices.find(v=>female?voiceLooksFemale(v.name):voiceLooksMale(v.name))||voices[female?1:0]||voices[0]||null;
     };
     const resetAudioUi=()=>{if(audioButton)audioButton.textContent='🔊 Ouvir';if(stopButton)stopButton.hidden=true;};
-    const stopAudio=()=>{audioToken++;window.speechSynthesis?.cancel();activeUtterance=null;audioState='stopped';chunks=[];chunkIndex=0;chunkOffset=0;resetAudioUi();};
+    const stopAudio=()=>{audioToken++;window.speechSynthesis?.cancel();activeUtterance=null;audioState='stopped';chunks=[];chunkIndex=0;chunkOffset=0;utteranceStartedAt=0;utteranceBaseOffset=0;audioAutoAdvance=false;resetAudioUi();};
+
+    const loadCurrentPageAudio=()=>{
+      const text=pageText();
+      chunks=text?splitSpeech(text):[];
+      chunkIndex=0;
+      chunkOffset=0;
+      return chunks.length>0;
+    };
+
+    const advanceAudioPage=async(token)=>{
+      if(token!==audioToken||audioState!=='speaking'||!activeRendition)return;
+      audioAutoAdvance=true;
+      try{
+        const before=activeRendition.currentLocation?.()?.start?.cfi||activeRendition.currentLocation?.()?.start?.href||'';
+        await activeRendition.next();
+        await new Promise(resolve=>setTimeout(resolve,260));
+        if(token!==audioToken||audioState!=='speaking')return;
+        const after=activeRendition.currentLocation?.()?.start?.cfi||activeRendition.currentLocation?.()?.start?.href||'';
+        if(after&&before&&after===before){
+          audioState='stopped';resetAudioUi();message.textContent='Leitura do livro concluída.';return;
+        }
+        if(!loadCurrentPageAudio()){
+          audioState='stopped';resetAudioUi();message.textContent='Leitura do livro concluída.';return;
+        }
+        message.textContent='Continuando na próxima página…';
+        speakChunk(token);
+      }catch{
+        audioState='stopped';resetAudioUi();message.textContent='Leitura do livro concluída.';
+      }finally{
+        setTimeout(()=>{audioAutoAdvance=false},120);
+      }
+    };
+
     const speakChunk=(token)=>{
       if(token!==audioToken||audioState!=='speaking')return;
-      if(chunkIndex>=chunks.length){audioState='stopped';chunkIndex=0;chunkOffset=0;activeUtterance=null;resetAudioUi();message.textContent='Leitura da página concluída.';return;}
+      if(chunkIndex>=chunks.length){advanceAudioPage(token);return;}
       const full=chunks[chunkIndex]||'';
       if(chunkOffset>=full.length){chunkIndex++;chunkOffset=0;speakChunk(token);return;}
       const baseOffset=chunkOffset;
-      const remaining=full.slice(baseOffset).trimStart();
-      const trimDelta=full.slice(baseOffset).length-remaining.length;
+      const rawRemaining=full.slice(baseOffset);
+      const remaining=rawRemaining.trimStart();
+      const trimDelta=rawRemaining.length-remaining.length;
       chunkOffset=baseOffset+trimDelta;
       if(!remaining){chunkIndex++;chunkOffset=0;speakChunk(token);return;}
       const utter=new SpeechSynthesisUtterance(remaining);
       activeUtterance=utter;
+      utteranceBaseOffset=chunkOffset;
+      utteranceStartedAt=Date.now();
       utter.lang='pt-BR';
       utter.rate=Number(rateSelect?.value||1);
       const voice=chooseVoice();if(voice)utter.voice=voice;
-      utter.onboundary=(ev)=>{if(token===audioToken&&typeof ev.charIndex==='number'){chunkOffset=Math.min(full.length,baseOffset+trimDelta+ev.charIndex);}};
-      utter.onend=()=>{if(token!==audioToken||audioState!=='speaking')return;chunkIndex++;chunkOffset=0;activeUtterance=null;speakChunk(token)};
-      utter.onerror=()=>{if(token===audioToken&&audioState==='speaking'){audioState='stopped';activeUtterance=null;resetAudioUi();message.textContent='A leitura em voz alta foi interrompida.';}};
+      utter.onboundary=(ev)=>{
+        if(token===audioToken&&typeof ev.charIndex==='number'){
+          chunkOffset=Math.min(full.length,utteranceBaseOffset+ev.charIndex);
+        }
+      };
+      utter.onend=()=>{
+        if(token!==audioToken||audioState!=='speaking')return;
+        chunkIndex++;
+        chunkOffset=0;
+        activeUtterance=null;
+        utteranceStartedAt=0;
+        speakChunk(token);
+      };
+      utter.onerror=()=>{
+        if(token===audioToken&&audioState==='speaking'){
+          audioState='stopped';activeUtterance=null;resetAudioUi();message.textContent='A leitura em voz alta foi interrompida.';
+        }
+      };
       window.speechSynthesis.speak(utter);
     };
+
     const pauseAudio=()=>{
       if(audioState!=='speaking')return;
+      const full=chunks[chunkIndex]||'';
+      if(full&&utteranceStartedAt){
+        const elapsed=Math.max(0,(Date.now()-utteranceStartedAt)/1000);
+        const rate=Number(rateSelect?.value||1);
+        const estimatedChars=Math.floor(elapsed*13*rate);
+        const estimatedOffset=Math.min(full.length,utteranceBaseOffset+estimatedChars);
+        if(estimatedOffset>chunkOffset)chunkOffset=estimatedOffset;
+        if(chunkOffset>0&&chunkOffset<full.length){
+          const previousSpace=full.lastIndexOf(' ',chunkOffset);
+          if(previousSpace>utteranceBaseOffset)chunkOffset=previousSpace+1;
+        }
+      }
       audioToken++;
       window.speechSynthesis?.cancel();
       activeUtterance=null;
+      utteranceStartedAt=0;
       audioState='paused';
       audioButton.textContent='▶ Continuar';
       stopButton.hidden=false;
       message.textContent='Leitura pausada. Toque em Continuar para retomar deste ponto.';
     };
+
     const resumeAudio=()=>{
       if(audioState!=='paused')return;
       audioState='speaking';
@@ -177,12 +246,19 @@ import Base from '../../layouts/Base.astro';
       message.textContent='Continuando a leitura…';
       speakChunk(audioToken);
     };
+
     const startAudio=()=>{
       if(!('speechSynthesis' in window)){message.textContent='Este navegador não oferece leitura em voz alta.';return;}
       if(audioState==='speaking'){pauseAudio();return;}
       if(audioState==='paused'){resumeAudio();return;}
-      const text=pageText();if(!text){message.textContent='Não encontrei texto nesta página para leitura em voz alta.';return;}
-      chunks=splitSpeech(text);chunkIndex=0;chunkOffset=0;audioToken++;window.speechSynthesis.cancel();audioState='speaking';audioButton.textContent='⏸ Pausar';stopButton.hidden=false;message.textContent='Leitura em voz alta ativada.';speakChunk(audioToken);
+      if(!loadCurrentPageAudio()){message.textContent='Não encontrei texto nesta página para leitura em voz alta.';return;}
+      audioToken++;
+      window.speechSynthesis.cancel();
+      audioState='speaking';
+      audioButton.textContent='⏸ Pausar';
+      stopButton.hidden=false;
+      message.textContent='Leitura contínua ativada.';
+      speakChunk(audioToken);
     };
 
     async function requestDownload(){
@@ -222,7 +298,9 @@ import Base from '../../layouts/Base.astro';
         let currentTheme='white';try{const saved=localStorage.getItem(themeStorageKey);if(saved==='white'||saved==='sepia')currentTheme=saved}catch{}
         const styleRenderedPage=()=>{try{rendition.getContents().forEach(contents=>{const doc=contents.document,root=doc.documentElement,body=doc.body;if(!root||!body)return;const bg=currentTheme==='sepia'?'#efe3c7':'#ffffff',fg=currentTheme==='sepia'?'#342d24':'#1f2a24';root.style.setProperty('background-color',bg,'important');body.style.setProperty('background-color',bg,'important');body.style.setProperty('color',fg,'important');Array.from(body.querySelectorAll('*')).forEach(el=>{if(!(el instanceof HTMLElement))return;const tag=el.tagName.toLowerCase();if(['img','svg','canvas','video','script','style'].includes(tag))return;const computed=contents.window.getComputedStyle(el).backgroundColor.replace(/\s+/g,'');const nearWhite=/^rgba?\((24[0-9]|25[0-5]),(24[0-9]|25[0-5]),(24[0-9]|25[0-5])(?:,1)?\)$/i.test(computed);const nearSepia=computed==='rgb(239,227,199)'||computed==='rgba(239,227,199,1)';if(nearWhite||nearSepia||el.dataset.bcReaderPaper==='1'){el.dataset.bcReaderPaper='1';el.style.setProperty('background-color',bg,'important')}})})}catch{}};
         const applyTheme=theme=>{currentTheme=theme==='sepia'?'sepia':'white';rendition.themes.select(currentTheme);readerStage?.setAttribute('data-reader-theme',currentTheme);themeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.readerTheme===currentTheme)));try{localStorage.setItem(themeStorageKey,currentTheme)}catch{};setTimeout(styleRenderedPage,60)};
-        themeButtons.forEach(button=>button.addEventListener('click',()=>applyTheme(button.dataset.readerTheme||'white')));rendition.on('rendered',()=>setTimeout(styleRenderedPage,80));rendition.on('relocated',()=>{stopAudio();});
+        themeButtons.forEach(button=>button.addEventListener('click',()=>applyTheme(button.dataset.readerTheme||'white')));
+        rendition.on('rendered',()=>setTimeout(styleRenderedPage,80));
+        rendition.on('relocated',()=>{if(!audioAutoAdvance&&audioState!=='stopped')stopAudio();});
         await rendition.display(firstSection.href);applyTheme(currentTheme);status.hidden=true;prev.disabled=false;next.disabled=false;
         const goPrev=()=>{stopAudio();rendition.prev()};const goNext=()=>{stopAudio();rendition.next()};prev.addEventListener('click',goPrev);next.addEventListener('click',goNext);
         document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();goPrev()}if(e.key==='ArrowRight'){e.preventDefault();goNext()}});
