@@ -96,31 +96,53 @@ import Base from '../../layouts/Base.astro';
         });
 
         const fitFixedLayout = () => {
-          const mobile = window.matchMedia('(max-width: 820px)').matches;
-          if (!mobile) return;
+          if (!window.matchMedia('(max-width: 820px)').matches) return;
           try {
             rendition.getContents().forEach((contents) => {
               const doc = contents.document;
               const root = doc.documentElement;
               const body = doc.body;
               if (!root || !body) return;
-              const viewport = doc.querySelector('meta[name="viewport"]')?.getAttribute('content') || '';
-              const fixed = /width\s*=\s*\d+/i.test(viewport) || root.scrollWidth > contents.window.innerWidth * 1.35;
-              if (!fixed) return;
-              const availableW = contents.window.innerWidth;
-              const availableH = contents.window.innerHeight;
-              const contentW = Math.max(root.scrollWidth, body.scrollWidth, 1);
-              const contentH = Math.max(root.scrollHeight, body.scrollHeight, 1);
-              const scale = Math.min(availableW / contentW, availableH / contentH, 1);
-              body.style.transformOrigin = 'top center';
-              body.style.transform = `scale(${scale})`;
-              body.style.width = `${100 / scale}%`;
-              body.style.margin = '0 auto';
+              const meta = doc.querySelector('meta[name="viewport"]');
+              const viewport = meta?.getAttribute('content') || '';
+              const widthMatch = viewport.match(/width\s*=\s*([0-9.]+)/i);
+              const heightMatch = viewport.match(/height\s*=\s*([0-9.]+)/i);
+              const declaredW = widthMatch ? Number(widthMatch[1]) : 0;
+              const declaredH = heightMatch ? Number(heightMatch[1]) : 0;
+              const svg = doc.querySelector('svg[viewBox]');
+              const vb = svg?.getAttribute('viewBox')?.trim().split(/[\s,]+/).map(Number) || [];
+              const svgW = vb.length === 4 ? vb[2] : 0;
+              const svgH = vb.length === 4 ? vb[3] : 0;
+              const fixedW = declaredW || svgW;
+              const fixedH = declaredH || svgH;
+              const looksFixed = Boolean(fixedW && fixedH) || /rendition:layout[^;]*pre-paginated/i.test(doc.documentElement.outerHTML.slice(0,4000));
+              if (!looksFixed) return;
+
+              const frameW = Math.max(contents.window.innerWidth,1);
+              const frameH = Math.max(contents.window.innerHeight,1);
+              const pageW = fixedW || Math.max(body.scrollWidth,root.scrollWidth,1);
+              const pageH = fixedH || Math.max(body.scrollHeight,root.scrollHeight,1);
+              const scale = Math.min((frameW * .94) / pageW,(frameH * .94) / pageH);
+              if (!Number.isFinite(scale) || scale <= 0) return;
+
+              root.style.width = '100%';
+              root.style.height = '100%';
+              root.style.overflow = 'hidden';
+              body.style.position = 'absolute';
+              body.style.left = '50%';
+              body.style.top = '50%';
+              body.style.width = `${pageW}px`;
+              body.style.height = `${pageH}px`;
+              body.style.margin = '0';
+              body.style.padding = '0';
+              body.style.transformOrigin = 'center center';
+              body.style.transform = `translate(-50%, -50%) scale(${scale})`;
+              body.style.overflow = 'hidden';
             });
           } catch (e) { console.warn('epub-mobile-fit',e); }
         };
 
-        rendition.on('rendered',fitFixedLayout);
+        rendition.on('rendered',() => requestAnimationFrame(fitFixedLayout));
         await rendition.display(firstSection.href);
         requestAnimationFrame(fitFixedLayout);
         status.hidden = true;
