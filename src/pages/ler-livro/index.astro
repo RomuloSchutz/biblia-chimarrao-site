@@ -13,10 +13,28 @@ import Base from '../../layouts/Base.astro';
           <button type="button" class="reader-theme-btn" data-reader-theme="white" aria-pressed="true">Branco</button>
           <button type="button" class="reader-theme-btn" data-reader-theme="sepia" aria-pressed="false">Sépia</button>
         </div>
+        <label class="reader-select-label">Voz
+          <select id="reader-voice" class="reader-select" aria-label="Voz da leitura">
+            <option value="masculina">Masculina</option>
+            <option value="feminina">Feminina</option>
+          </select>
+        </label>
+        <label class="reader-select-label">Velocidade
+          <select id="reader-rate" class="reader-select" aria-label="Velocidade da leitura">
+            <option value="0.75">0,75×</option>
+            <option value="1" selected>1,0×</option>
+            <option value="1.25">1,25×</option>
+          </select>
+        </label>
+        <button id="reader-audio" class="btn secondary" type="button">🔊 Ouvir</button>
+        <button id="reader-stop" class="btn secondary" type="button" hidden>■ Parar</button>
+        <button id="reader-download" class="btn secondary" type="button">EPUB · verificar</button>
         <a class="btn secondary" href="/loja/">Voltar à Loja</a>
         <a class="btn secondary" href="/minha-conta/#book-library">Minha biblioteca</a>
       </div>
     </div>
+
+    <p id="reader-message" class="reader-message" role="status" aria-live="polite"></p>
 
     <div class="reader-wrap">
       <button id="reader-prev" class="reader-float reader-float-prev" type="button" disabled aria-label="Página anterior" title="Página anterior">‹</button>
@@ -32,15 +50,18 @@ import Base from '../../layouts/Base.astro';
 
   <style>
     .reader-shell{width:min(calc(100% - 32px),1080px);margin:0 auto;padding:24px 0 34px;border-top:0}
-    .reader-toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 20px;border-radius:20px;background:rgba(18,59,49,.42);margin:0 70px 14px}
+    .reader-toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 20px;border-radius:20px;background:rgba(18,59,49,.42);margin:0 70px 10px}
     .reader-toolbar strong{font-family:Georgia,"Times New Roman",serif;font-size:1.25rem;color:#f7dfaa}
-    .reader-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+    .reader-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
     .reader-theme{display:flex;align-items:center;padding:3px;border:1px solid rgba(230,196,135,.65);border-radius:999px;background:rgba(7,42,35,.45)}
     .reader-theme-btn{appearance:none;border:0;border-radius:999px;background:transparent;color:#f7dfaa;padding:8px 12px;font:600 .8rem/1.1 system-ui,sans-serif;cursor:pointer;transition:.18s ease}
     .reader-theme-btn[aria-pressed="true"]{background:#e7bd75;color:#173e34;box-shadow:0 2px 8px rgba(0,0,0,.18)}
     .reader-theme-btn:focus-visible{outline:2px solid #f8e5bb;outline-offset:2px}
+    .reader-select-label{display:flex;align-items:center;gap:5px;color:#f7dfaa;font:600 .78rem/1 system-ui,sans-serif}
+    .reader-select{border:1px solid rgba(230,196,135,.55);border-radius:999px;background:#123b31;color:#f8e5bb;padding:7px 9px;font:600 .78rem/1 system-ui,sans-serif}
+    .reader-message{margin:0 70px 10px;color:#f8e5bb;font-size:.86rem;min-height:1.1em}
     .reader-wrap{position:relative;padding:0 70px}
-    .reader-stage{position:relative;height:calc(100vh - 245px);min-height:480px;max-height:720px;border:1px solid rgba(230,196,135,.28);border-radius:24px;background:#fff;overflow:hidden;box-shadow:0 18px 48px rgba(0,0,0,.12);transition:background .2s ease}
+    .reader-stage{position:relative;height:calc(100vh - 255px);min-height:480px;max-height:720px;border:1px solid rgba(230,196,135,.28);border-radius:24px;background:#fff;overflow:hidden;box-shadow:0 18px 48px rgba(0,0,0,.12);transition:background .2s ease}
     .reader-stage[data-reader-theme="sepia"]{background:#efe3c7}
     .reader-status{padding:30px;color:#6f756f}
     #epub-viewer{width:100%;height:100%;background:#fff;color:#1f2a24;transition:background .2s ease}
@@ -49,32 +70,18 @@ import Base from '../../layouts/Base.astro';
     .reader-float{position:absolute;z-index:20;top:50%;transform:translateY(-50%);width:50px;height:74px;border-radius:999px;border:1px solid rgba(230,196,135,.78);background:rgba(18,59,49,.96);color:#f8e5bb;font:400 2.6rem/1 Georgia,serif;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.24);transition:.18s ease}
     .reader-float:hover:not(:disabled),.reader-float:focus-visible:not(:disabled){background:#a7793d;color:#fff;transform:translateY(-50%) scale(1.05)}
     .reader-float:disabled{opacity:.25;cursor:default}
-    .reader-float-prev{left:8px}
-    .reader-float-next{right:8px}
+    .reader-float-prev{left:8px}.reader-float-next{right:8px}
     .reader-hint{text-align:center;color:rgba(255,248,236,.7);font-size:.82rem;padding-top:9px}
-
     @media(max-width:820px){
       .reader-shell{width:min(calc(100% - 12px),1080px);padding:12px 0 20px}
-      .reader-toolbar{padding:12px 14px;margin:0 0 9px}
-      .reader-toolbar strong{font-size:1.05rem}
-      .reader-actions{justify-content:flex-start}
-      .reader-actions .btn{min-height:40px;padding:8px 13px;font-size:.85rem}
-      .reader-theme-btn{padding:8px 10px}
-      .reader-wrap{padding:0 46px}
-      .reader-stage{height:calc(100dvh - 225px);min-height:430px;border-radius:18px}
-      .reader-float{width:38px;height:58px;font-size:2.1rem}
-      .reader-float-prev{left:2px}
-      .reader-float-next{right:2px}
-      .reader-hint{font-size:.72rem}
+      .reader-toolbar{padding:12px 14px;margin:0 0 7px;display:block}.reader-toolbar strong{font-size:1.05rem}
+      .reader-actions{justify-content:flex-start;margin-top:10px}.reader-actions .btn{min-height:38px;padding:7px 11px;font-size:.8rem}
+      .reader-select-label{font-size:.72rem}.reader-select{padding:6px 8px;font-size:.72rem}.reader-theme-btn{padding:8px 10px}
+      .reader-message{margin:0 4px 7px;font-size:.78rem}.reader-wrap{padding:0 46px}
+      .reader-stage{height:calc(100dvh - 285px);min-height:430px;border-radius:18px}
+      .reader-float{width:38px;height:58px;font-size:2.1rem}.reader-float-prev{left:2px}.reader-float-next{right:2px}.reader-hint{font-size:.72rem}
     }
-
-    @media(max-width:520px){
-      .reader-wrap{padding:0 38px}
-      .reader-float{width:34px;height:54px}
-      .reader-toolbar{display:block}
-      .reader-actions{margin-top:10px;justify-content:flex-start}
-      .reader-actions .btn{padding:7px 10px;font-size:.78rem}
-    }
+    @media(max-width:520px){.reader-wrap{padding:0 38px}.reader-float{width:34px;height:54px}.reader-actions .btn{padding:7px 9px;font-size:.75rem}}
   </style>
 
   <script is:inline src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -83,257 +90,112 @@ import Base from '../../layouts/Base.astro';
   <script>
     import { supabase } from '../../lib/supabase-browser.js';
 
-    const params = new URLSearchParams(window.location.search);
-    const editionId = params.get('edition');
-    const status = document.querySelector('#reader-status');
-    const viewer = document.querySelector('#epub-viewer');
-    const titleEl = document.querySelector('#reader-book-title');
-    const prev = document.querySelector('#reader-prev');
-    const next = document.querySelector('#reader-next');
-    const readerStage = document.querySelector('.reader-stage');
-    const themeButtons = Array.from(document.querySelectorAll('.reader-theme-btn'));
-    const functionUrl = 'https://srabzgokulsiujusbqxl.supabase.co/functions/v1/book-epub-access';
-    const publishableKey = 'sb_publishable_TjLHUAq038yLQ2hqqaVZjg__GM4w2Q4';
-    const themeStorageKey = 'biblia-chimarrao-reader-theme';
+    const params=new URLSearchParams(window.location.search);
+    const editionId=params.get('edition');
+    const status=document.querySelector('#reader-status');
+    const viewer=document.querySelector('#epub-viewer');
+    const titleEl=document.querySelector('#reader-book-title');
+    const prev=document.querySelector('#reader-prev');
+    const next=document.querySelector('#reader-next');
+    const readerStage=document.querySelector('.reader-stage');
+    const themeButtons=Array.from(document.querySelectorAll('.reader-theme-btn'));
+    const message=document.querySelector('#reader-message');
+    const audioButton=document.querySelector('#reader-audio');
+    const stopButton=document.querySelector('#reader-stop');
+    const voiceSelect=document.querySelector('#reader-voice');
+    const rateSelect=document.querySelector('#reader-rate');
+    const downloadButton=document.querySelector('#reader-download');
+    const functionUrl='https://srabzgokulsiujusbqxl.supabase.co/functions/v1/book-epub-access';
+    const publishableKey='sb_publishable_TjLHUAq038yLQ2hqqaVZjg__GM4w2Q4';
+    const themeStorageKey='biblia-chimarrao-reader-theme';
+    let activeRendition=null;
+    let activeSession=null;
+    let currentBookTitle='livro';
+    let audioState='stopped';
+    let audioToken=0;
+    let chunks=[];
+    let chunkIndex=0;
 
-    const fail = (message) => {
-      status.textContent = message;
-      viewer.hidden = true;
-      status.hidden = false;
+    const voiceLooksFemale=(name='')=>/female|femin|luciana|francisca|maria|helena|leticia|camila|vitoria|brenda/i.test(name);
+    const voiceLooksMale=(name='')=>/male|mascul|antonio|daniel|felipe|ricardo|thiago|paulo/i.test(name);
+    const fail=(text)=>{status.textContent=text;viewer.hidden=true;status.hidden=false;};
+    const formatDate=(iso)=>new Intl.DateTimeFormat('pt-BR',{dateStyle:'long'}).format(new Date(iso));
+
+    const pageText=()=>{
+      try{return (activeRendition?.getContents?.()||[]).map(c=>c.document?.body?.innerText||'').join(' ').replace(/\s+/g,' ').trim();}catch{return ''}
+    };
+    const splitSpeech=(text)=>{
+      const parts=text.match(/[^.!?;:]+[.!?;:]?|[^.!?;:]+$/g)||[text];const out=[];let current='';
+      for(const part of parts){if((current+' '+part).length>230&&current){out.push(current.trim());current=part}else current+=(current?' ':'')+part}
+      if(current.trim())out.push(current.trim());return out;
+    };
+    const chooseVoice=()=>{
+      const voices=(window.speechSynthesis?.getVoices?.()||[]).filter(v=>/^pt(-|_)/i.test(v.lang)||/portugu/i.test(v.lang));
+      const female=voiceSelect?.value==='feminina';
+      return voices.find(v=>female?voiceLooksFemale(v.name):voiceLooksMale(v.name))||voices[female?1:0]||voices[0]||null;
+    };
+    const stopAudio=()=>{audioToken++;window.speechSynthesis?.cancel();audioState='stopped';chunks=[];chunkIndex=0;if(audioButton)audioButton.textContent='🔊 Ouvir';if(stopButton)stopButton.hidden=true;};
+    const speakChunk=(token)=>{
+      if(token!==audioToken)return;
+      if(chunkIndex>=chunks.length){audioState='stopped';audioButton.textContent='🔊 Ouvir';stopButton.hidden=true;return;}
+      const utter=new SpeechSynthesisUtterance(chunks[chunkIndex]);utter.lang='pt-BR';utter.rate=Number(rateSelect?.value||1);const voice=chooseVoice();if(voice)utter.voice=voice;
+      utter.onend=()=>{if(token!==audioToken)return;chunkIndex++;speakChunk(token)};
+      utter.onerror=()=>{if(token===audioToken){audioState='stopped';audioButton.textContent='🔊 Ouvir';stopButton.hidden=true;message.textContent='A leitura em voz alta foi interrompida.';}};
+      window.speechSynthesis.speak(utter);
+    };
+    const startAudio=()=>{
+      if(!('speechSynthesis' in window)){message.textContent='Este navegador não oferece leitura em voz alta.';return;}
+      if(audioState==='speaking'){window.speechSynthesis.pause();audioState='paused';audioButton.textContent='▶ Continuar';return;}
+      if(audioState==='paused'){window.speechSynthesis.resume();audioState='speaking';audioButton.textContent='⏸ Pausar';return;}
+      const text=pageText();if(!text){message.textContent='Não encontrei texto nesta página para leitura em voz alta.';return;}
+      chunks=splitSpeech(text);chunkIndex=0;audioToken++;window.speechSynthesis.cancel();audioState='speaking';audioButton.textContent='⏸ Pausar';stopButton.hidden=false;message.textContent='Leitura em voz alta ativada.';speakChunk(audioToken);
     };
 
-    async function openReader() {
-      if (!editionId) {
-        fail('Livro não informado. Volte para sua biblioteca e escolha uma obra.');
-        return;
-      }
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        window.location.href = '/entrar/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
-        return;
-      }
-
-      const library = await supabase.rpc('my_book_library');
-      const item = (library.data || []).find((x) => x.edition_id === editionId);
-      if (item?.title) titleEl.textContent = item.title;
-
-      let accessData = null;
-      try {
-        status.textContent = 'Liberando seu acesso ao livro…';
-        const response = await fetch(functionUrl,{
-          method:'POST',
-          headers:{'Content-Type':'application/json','apikey':publishableKey},
-          body:JSON.stringify({edition_id:editionId,access_token:session.access_token})
-        });
-        const contentType = response.headers.get('content-type') || '';
-        const data = contentType.includes('application/json') ? await response.json() : null;
-        if (!response.ok) throw new Error(data?.error || `Não foi possível liberar este livro (${response.status}).`);
-        if (!data?.signed_url) throw new Error(data?.error || 'O servidor não liberou o arquivo deste livro.');
-        accessData = data;
-      } catch (err) {
-        console.error('book-epub-access',err);
-        fail(err instanceof Error ? err.message : 'Não foi possível comunicar com o servidor de leitura. Atualize a página e tente novamente.');
-        return;
-      }
-
-      if (typeof window.JSZip !== 'function') {
-        fail('O componente de abertura do EPUB não carregou corretamente. Atualize a página e tente novamente.');
-        return;
-      }
-      if (typeof window.ePub !== 'function') {
-        fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
-        return;
-      }
-
-      try {
-        status.textContent = 'Baixando o EPUB autorizado…';
-        const epubResponse = await fetch(accessData.signed_url,{cache:'no-store'});
-        if (!epubResponse.ok) throw new Error(`Falha ao carregar o arquivo (${epubResponse.status}).`);
-        const epubBuffer = await epubResponse.arrayBuffer();
-        if (!epubBuffer.byteLength) throw new Error('O arquivo do livro está vazio.');
-
-        status.textContent = 'Abrindo a estrutura do livro…';
-        const book = window.ePub(epubBuffer);
-        await book.ready;
-
-        const firstSection = book.spine?.first?.();
-        if (!firstSection) throw new Error('O EPUB não possui uma seção inicial de leitura.');
-
-        viewer.hidden = false;
-        viewer.style.display = 'block';
-
-        const rendition = book.renderTo(viewer,{
-          width:'100%',
-          height:'100%',
-          spread:'none',
-          flow:'paginated',
-          manager:'default'
-        });
-
-        const commonTheme = {
-          'font-family':'Georgia, serif',
-          'font-size':'100%',
-          'line-height':'1.58',
-          'padding-left':'5.5%',
-          'padding-right':'5.5%'
-        };
-
-        rendition.themes.register('white',{
-          html:{background:'#ffffff',color:'#1f2a24'},
-          body:{...commonTheme,background:'#ffffff',color:'#1f2a24'},
-          img:{'max-width':'100%','max-height':'94vh',width:'auto',height:'auto','object-fit':'contain'}
-        });
-
-        rendition.themes.register('sepia',{
-          html:{background:'#efe3c7',color:'#342d24'},
-          body:{...commonTheme,background:'#efe3c7',color:'#342d24'},
-          img:{'max-width':'100%','max-height':'94vh',width:'auto',height:'auto','object-fit':'contain'}
-        });
-
-        let currentTheme = 'white';
-        try {
-          const saved = localStorage.getItem(themeStorageKey);
-          if (saved === 'white' || saved === 'sepia') currentTheme = saved;
-        } catch {}
-
-        const styleRenderedPage = () => {
-          try {
-            rendition.getContents().forEach((contents) => {
-              const doc = contents.document;
-              const root = doc.documentElement;
-              const body = doc.body;
-              if (!root || !body) return;
-
-              const bg = currentTheme === 'sepia' ? '#efe3c7' : '#ffffff';
-              const fg = currentTheme === 'sepia' ? '#342d24' : '#1f2a24';
-              const pageImage = body.querySelector('.page > img');
-              const textLength = (body.textContent || '').replace(/\s+/g,'').length;
-              const imageOnlyPage = Boolean(pageImage && textLength < 80);
-
-              root.style.setProperty('background-color',bg,'important');
-              body.style.setProperty('background-color',bg,'important');
-              body.style.setProperty('color',fg,'important');
-
-              if (imageOnlyPage && pageImage instanceof HTMLElement) {
-                const viewport = doc.querySelector('meta[name="viewport"]');
-                viewport?.setAttribute('content','width=device-width, initial-scale=1.0, maximum-scale=1.0');
-
-                root.style.setProperty('width','100%','important');
-                root.style.setProperty('height','100%','important');
-                root.style.setProperty('overflow','hidden','important');
-                body.style.setProperty('margin','0','important');
-                body.style.setProperty('padding','0','important');
-                body.style.setProperty('width','100%','important');
-                body.style.setProperty('height','100%','important');
-                body.style.setProperty('overflow','hidden','important');
-
-                const page = pageImage.parentElement;
-                if (page instanceof HTMLElement) {
-                  page.style.setProperty('margin','0','important');
-                  page.style.setProperty('padding','0','important');
-                  page.style.setProperty('width','100%','important');
-                  page.style.setProperty('height','100%','important');
-                  page.style.setProperty('display','flex','important');
-                  page.style.setProperty('align-items','center','important');
-                  page.style.setProperty('justify-content','center','important');
-                  page.style.setProperty('overflow','hidden','important');
-                  page.style.setProperty('background-color',bg,'important');
-                }
-
-                pageImage.style.setProperty('display','block','important');
-                pageImage.style.setProperty('width','100%','important');
-                pageImage.style.setProperty('height','100%','important');
-                pageImage.style.setProperty('max-width','100%','important');
-                pageImage.style.setProperty('max-height','100%','important');
-                pageImage.style.setProperty('object-fit','contain','important');
-                pageImage.style.setProperty('margin','0 auto','important');
-                pageImage.style.setProperty(
-                  'filter',
-                  currentTheme === 'sepia' ? 'sepia(.28) saturate(.78) brightness(.97)' : 'none',
-                  'important'
-                );
-                return;
-              }
-
-              Array.from(body.querySelectorAll('*')).forEach((el) => {
-                if (!(el instanceof HTMLElement)) return;
-                const tag = el.tagName.toLowerCase();
-                if (['img','svg','canvas','video','script','style'].includes(tag)) return;
-
-                const computed = contents.window.getComputedStyle(el).backgroundColor.replace(/\s+/g,'');
-                const nearWhite = /^rgba?\((24[0-9]|25[0-5]),(24[0-9]|25[0-5]),(24[0-9]|25[0-5])(?:,1)?\)$/i.test(computed);
-                const nearSepia = computed === 'rgb(239,227,199)' || computed === 'rgba(239,227,199,1)';
-
-                if (nearWhite || nearSepia || el.dataset.bcReaderPaper === '1') {
-                  el.dataset.bcReaderPaper = '1';
-                  el.style.setProperty('background-color',bg,'important');
-                }
-              });
-            });
-          } catch (e) {
-            console.warn('epub-page-style',e);
-          }
-        };
-
-        const applyTheme = (theme) => {
-          currentTheme = theme === 'sepia' ? 'sepia' : 'white';
-          rendition.themes.select(currentTheme);
-          readerStage?.setAttribute('data-reader-theme',currentTheme);
-          themeButtons.forEach((button) => {
-            button.setAttribute('aria-pressed',String(button.dataset.readerTheme === currentTheme));
-          });
-          try { localStorage.setItem(themeStorageKey,currentTheme); } catch {}
-
-          setTimeout(styleRenderedPage,30);
-          setTimeout(styleRenderedPage,140);
-          setTimeout(styleRenderedPage,300);
-        };
-
-        themeButtons.forEach((button) => {
-          button.addEventListener('click',() => applyTheme(button.dataset.readerTheme || 'white'));
-        });
-
-        rendition.on('rendered',() => {
-          applyTheme(currentTheme);
-          setTimeout(styleRenderedPage,80);
-          setTimeout(styleRenderedPage,220);
-        });
-
-        await rendition.display(firstSection.href);
-        applyTheme(currentTheme);
-        setTimeout(styleRenderedPage,170);
-
-        status.hidden = true;
-        prev.disabled = false;
-        next.disabled = false;
-
-        const goPrev = () => rendition.prev();
-        const goNext = () => rendition.next();
-
-        prev.addEventListener('click',goPrev);
-        next.addEventListener('click',goNext);
-
-        document.addEventListener('keydown',(e) => {
-          if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            goPrev();
-          }
-          if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            goNext();
-          }
-        });
-      } catch (err) {
-        console.error('epub-render',err);
-        fail(
-          err instanceof Error
-            ? `O arquivo foi liberado, mas o leitor não conseguiu abrir a obra: ${err.message}`
-            : 'O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra.'
-        );
-      }
+    async function requestDownload(){
+      if(!activeSession||!editionId)return;
+      downloadButton.disabled=true;message.textContent='Verificando a liberação do EPUB…';
+      try{
+        const response=await fetch(functionUrl,{method:'POST',headers:{'Content-Type':'application/json','apikey':publishableKey},body:JSON.stringify({edition_id:editionId,access_token:activeSession.access_token,download:true})});
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok){
+          if(data?.download_available_at){downloadButton.textContent='EPUB · '+new Intl.DateTimeFormat('pt-BR').format(new Date(data.download_available_at));message.textContent=`O EPUB será liberado para download em ${formatDate(data.download_available_at)}.`;return;}
+          throw new Error(data?.error||'Não foi possível liberar o download.');
+        }
+        if(!data?.signed_url)throw new Error('O servidor não retornou o arquivo.');
+        const a=document.createElement('a');a.href=data.signed_url;a.download=(currentBookTitle||'livro').replace(/[^a-zA-Z0-9À-ÿ _-]+/g,'').trim()+'.epub';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();downloadButton.textContent='Baixar EPUB';message.textContent='Download do EPUB liberado.';
+      }catch(err){message.textContent=err instanceof Error?err.message:'Não foi possível liberar o EPUB.';}finally{downloadButton.disabled=false;}
     }
 
+    async function openReader(){
+      if(!editionId){fail('Livro não informado. Volte para sua biblioteca e escolha uma obra.');return;}
+      const {data:{session}}=await supabase.auth.getSession();activeSession=session;
+      if(!session?.user){window.location.href='/entrar/?next='+encodeURIComponent(window.location.pathname+window.location.search);return;}
+      const library=await supabase.rpc('my_book_library');const item=(library.data||[]).find(x=>x.edition_id===editionId);if(item?.title){titleEl.textContent=item.title;currentBookTitle=item.title;}
+      let accessData=null;
+      try{
+        status.textContent='Liberando seu acesso ao livro…';
+        const response=await fetch(functionUrl,{method:'POST',headers:{'Content-Type':'application/json','apikey':publishableKey},body:JSON.stringify({edition_id:editionId,access_token:session.access_token})});
+        const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data?.error||`Não foi possível liberar este livro (${response.status}).`);if(!data?.signed_url)throw new Error('O servidor não liberou o arquivo deste livro.');accessData=data;
+      }catch(err){fail(err instanceof Error?err.message:'Não foi possível comunicar com o servidor de leitura.');return;}
+      if(typeof window.JSZip!=='function'||typeof window.ePub!=='function'){fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');return;}
+      try{
+        status.textContent='Baixando o EPUB autorizado…';const epubResponse=await fetch(accessData.signed_url,{cache:'no-store'});if(!epubResponse.ok)throw new Error(`Falha ao carregar o arquivo (${epubResponse.status}).`);const epubBuffer=await epubResponse.arrayBuffer();if(!epubBuffer.byteLength)throw new Error('O arquivo do livro está vazio.');
+        const book=window.ePub(epubBuffer);await book.ready;const firstSection=book.spine?.first?.();if(!firstSection)throw new Error('O EPUB não possui uma seção inicial de leitura.');viewer.hidden=false;viewer.style.display='block';
+        const rendition=book.renderTo(viewer,{width:'100%',height:'100%',spread:'none',flow:'paginated',manager:'default'});activeRendition=rendition;
+        const commonTheme={'font-family':'Georgia, serif','font-size':'100%','line-height':'1.58','padding-left':'5.5%','padding-right':'5.5%'};
+        rendition.themes.register('white',{html:{background:'#ffffff',color:'#1f2a24'},body:{...commonTheme,background:'#ffffff',color:'#1f2a24'},img:{'max-width':'100%','max-height':'94vh',width:'auto',height:'auto','object-fit':'contain'}});
+        rendition.themes.register('sepia',{html:{background:'#efe3c7',color:'#342d24'},body:{...commonTheme,background:'#efe3c7',color:'#342d24'},img:{'max-width':'100%','max-height':'94vh',width:'auto',height:'auto','object-fit':'contain'}});
+        let currentTheme='white';try{const saved=localStorage.getItem(themeStorageKey);if(saved==='white'||saved==='sepia')currentTheme=saved}catch{}
+        const styleRenderedPage=()=>{try{rendition.getContents().forEach(contents=>{const doc=contents.document,root=doc.documentElement,body=doc.body;if(!root||!body)return;const bg=currentTheme==='sepia'?'#efe3c7':'#ffffff',fg=currentTheme==='sepia'?'#342d24':'#1f2a24';root.style.setProperty('background-color',bg,'important');body.style.setProperty('background-color',bg,'important');body.style.setProperty('color',fg,'important');Array.from(body.querySelectorAll('*')).forEach(el=>{if(!(el instanceof HTMLElement))return;const tag=el.tagName.toLowerCase();if(['img','svg','canvas','video','script','style'].includes(tag))return;const computed=contents.window.getComputedStyle(el).backgroundColor.replace(/\s+/g,'');const nearWhite=/^rgba?\((24[0-9]|25[0-5]),(24[0-9]|25[0-5]),(24[0-9]|25[0-5])(?:,1)?\)$/i.test(computed);const nearSepia=computed==='rgb(239,227,199)'||computed==='rgba(239,227,199,1)';if(nearWhite||nearSepia||el.dataset.bcReaderPaper==='1'){el.dataset.bcReaderPaper='1';el.style.setProperty('background-color',bg,'important')}})})}catch{}};
+        const applyTheme=theme=>{currentTheme=theme==='sepia'?'sepia':'white';rendition.themes.select(currentTheme);readerStage?.setAttribute('data-reader-theme',currentTheme);themeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.readerTheme===currentTheme)));try{localStorage.setItem(themeStorageKey,currentTheme)}catch{};setTimeout(styleRenderedPage,60)};
+        themeButtons.forEach(button=>button.addEventListener('click',()=>applyTheme(button.dataset.readerTheme||'white')));rendition.on('rendered',()=>setTimeout(styleRenderedPage,80));rendition.on('relocated',()=>{stopAudio();});
+        await rendition.display(firstSection.href);applyTheme(currentTheme);status.hidden=true;prev.disabled=false;next.disabled=false;
+        const goPrev=()=>{stopAudio();rendition.prev()};const goNext=()=>{stopAudio();rendition.next()};prev.addEventListener('click',goPrev);next.addEventListener('click',goNext);
+        document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();goPrev()}if(e.key==='ArrowRight'){e.preventDefault();goNext()}});
+      }catch(err){fail(err instanceof Error?`O arquivo foi liberado, mas o leitor não conseguiu abrir a obra: ${err.message}`:'O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra.');}
+    }
+
+    audioButton?.addEventListener('click',startAudio);stopButton?.addEventListener('click',stopAudio);voiceSelect?.addEventListener('change',stopAudio);rateSelect?.addEventListener('change',stopAudio);downloadButton?.addEventListener('click',requestDownload);window.addEventListener('beforeunload',stopAudio);
     openReader();
   </script>
 </Base>
