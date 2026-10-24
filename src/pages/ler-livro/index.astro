@@ -19,6 +19,8 @@ import Base from '../../layouts/Base.astro';
       <div id="epub-viewer" hidden></div>
     </div>
   </section>
+  <!-- EPUB.js usa JSZip para abrir EPUBs empacotados. A ordem é obrigatória. -->
+  <script is:inline src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
   <script>
     import { supabase } from '../../lib/supabase-browser.js';
@@ -60,12 +62,12 @@ import Base from '../../layouts/Base.astro';
         }
 
         if(accessData?.signed_url){
-          if(typeof window.ePub!=='function'){
+          if(typeof window.JSZip!=='function'){
+            fail('O componente de abertura do EPUB não carregou corretamente. Atualize a página e tente novamente.');
+          } else if(typeof window.ePub!=='function'){
             fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
           } else {
             try{
-              // Baixa o EPUB autorizado como um único Blob. Isso evita que o EPUB.js
-              // tente fazer leituras parciais diretamente na URL assinada do Storage.
               status.textContent='Carregando o livro…';
               const epubResponse=await fetch(accessData.signed_url,{cache:'no-store'});
               if(!epubResponse.ok) throw new Error(`Falha ao carregar o arquivo (${epubResponse.status}).`);
