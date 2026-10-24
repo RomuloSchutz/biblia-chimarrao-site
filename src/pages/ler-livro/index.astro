@@ -9,26 +9,34 @@ import Base from '../../layouts/Base.astro';
         <strong id="reader-book-title">Abrindo sua leitura…</strong>
       </div>
       <div class="reader-actions">
-        <button id="reader-prev" class="btn secondary" type="button" disabled>← Anterior</button>
-        <button id="reader-next" class="btn secondary" type="button" disabled>Próxima →</button>
         <a class="btn secondary" href="/minha-conta/#book-library">Minha biblioteca</a>
       </div>
     </div>
     <div class="reader-stage">
       <div id="reader-status" class="reader-status">Validando seu acesso e preparando o livro…</div>
       <div id="epub-viewer" hidden></div>
+      <button id="reader-prev" class="reader-float reader-float-prev" type="button" disabled aria-label="Página anterior" title="Página anterior">‹</button>
+      <button id="reader-next" class="reader-float reader-float-next" type="button" disabled aria-label="Próxima página" title="Próxima página">›</button>
     </div>
+    <div class="reader-hint">Use as setas laterais ou as teclas ← → para virar a página.</div>
   </section>
   <style>
-    .reader-shell{width:min(calc(100% - 32px),1480px);margin:0 auto;padding:44px 0 70px;border-top:0}
-    .reader-toolbar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px;border-radius:24px;background:rgba(18,59,49,.42);margin-bottom:24px}
-    .reader-toolbar strong{font-family:Georgia,"Times New Roman",serif;font-size:1.35rem;color:#f7dfaa}
+    .reader-shell{width:min(calc(100% - 32px),1180px);margin:0 auto;padding:24px 0 34px;border-top:0}
+    .reader-toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 20px;border-radius:20px;background:rgba(18,59,49,.42);margin-bottom:14px}
+    .reader-toolbar strong{font-family:Georgia,"Times New Roman",serif;font-size:1.25rem;color:#f7dfaa}
     .reader-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .reader-stage{position:relative;min-height:680px;border:1px solid rgba(230,196,135,.28);border-radius:28px;background:#f7f1e7;overflow:hidden}
-    .reader-status{padding:34px;color:#6f756f}
-    #epub-viewer{width:100%;height:680px;min-height:680px;background:#fffdf8;color:#1f2a24}
+    .reader-stage{position:relative;height:calc(100vh - 245px);min-height:480px;max-height:720px;border:1px solid rgba(230,196,135,.28);border-radius:24px;background:#fffdf8;overflow:hidden;box-shadow:0 18px 48px rgba(0,0,0,.12)}
+    .reader-status{padding:30px;color:#6f756f}
+    #epub-viewer{width:100%;height:100%;background:#fffdf8;color:#1f2a24}
     #epub-viewer iframe{background:#fffdf8!important}
-    @media(max-width:820px){.reader-shell{width:min(calc(100% - 20px),1480px);padding-top:24px}.reader-toolbar{display:block}.reader-actions{justify-content:flex-start;margin-top:16px}.reader-actions .btn{width:auto}.reader-stage{min-height:72vh}#epub-viewer{height:72vh;min-height:560px}}
+    .reader-float{position:absolute;z-index:20;top:50%;transform:translateY(-50%);width:52px;height:76px;border-radius:999px;border:1px solid rgba(230,196,135,.78);background:rgba(18,59,49,.92);color:#f8e5bb;font:400 2.7rem/1 Georgia,serif;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.24);transition:.18s ease}
+    .reader-float:hover:not(:disabled),.reader-float:focus-visible:not(:disabled){background:#a7793d;color:#fff;transform:translateY(-50%) scale(1.05)}
+    .reader-float:disabled{opacity:.25;cursor:default}
+    .reader-float-prev{left:14px}.reader-float-next{right:14px}
+    .reader-hint{text-align:center;color:rgba(255,248,236,.7);font-size:.82rem;padding-top:9px}
+    @media(max-width:820px){
+      .reader-shell{width:min(calc(100% - 12px),1180px);padding:12px 0 20px}.reader-toolbar{padding:12px 14px;margin-bottom:9px}.reader-toolbar strong{font-size:1.05rem}.reader-actions .btn{min-height:40px;padding:8px 13px;font-size:.85rem}.reader-stage{height:calc(100dvh - 205px);min-height:430px;border-radius:18px}.reader-float{width:42px;height:62px;font-size:2.25rem}.reader-float-prev{left:7px}.reader-float-next{right:7px}.reader-hint{font-size:.72rem}
+    }
   </style>
   <script is:inline src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
@@ -57,58 +65,38 @@ import Base from '../../layouts/Base.astro';
         let accessData=null;
         try{
           status.textContent='Liberando seu acesso ao livro…';
-          const response=await fetch(functionUrl,{
-            method:'POST',
-            headers:{'Content-Type':'application/json','apikey':publishableKey},
-            body:JSON.stringify({edition_id:editionId,access_token:session.access_token})
-          });
+          const response=await fetch(functionUrl,{method:'POST',headers:{'Content-Type':'application/json','apikey':publishableKey},body:JSON.stringify({edition_id:editionId,access_token:session.access_token})});
           const contentType=response.headers.get('content-type')||'';
           const data=contentType.includes('application/json')?await response.json():null;
           if(!response.ok) throw new Error(data?.error||`Não foi possível liberar este livro (${response.status}).`);
           if(!data?.signed_url) throw new Error(data?.error||'O servidor não liberou o arquivo deste livro.');
           accessData=data;
-        }catch(err){
-          console.error('book-epub-access',err);
-          fail(err instanceof Error?err.message:'Não foi possível comunicar com o servidor de leitura. Atualize a página e tente novamente.');
-        }
+        }catch(err){console.error('book-epub-access',err);fail(err instanceof Error?err.message:'Não foi possível comunicar com o servidor de leitura. Atualize a página e tente novamente.');}
 
         if(accessData?.signed_url){
-          if(typeof window.JSZip!=='function'){
-            fail('O componente de abertura do EPUB não carregou corretamente. Atualize a página e tente novamente.');
-          } else if(typeof window.ePub!=='function'){
-            fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
-          } else {
+          if(typeof window.JSZip!=='function') fail('O componente de abertura do EPUB não carregou corretamente. Atualize a página e tente novamente.');
+          else if(typeof window.ePub!=='function') fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
+          else {
             try{
               status.textContent='Baixando o EPUB autorizado…';
               const epubResponse=await fetch(accessData.signed_url,{cache:'no-store'});
               if(!epubResponse.ok) throw new Error(`Falha ao carregar o arquivo (${epubResponse.status}).`);
               const epubBuffer=await epubResponse.arrayBuffer();
               if(!epubBuffer.byteLength) throw new Error('O arquivo do livro está vazio.');
-
               status.textContent='Abrindo a estrutura do livro…';
               const book=window.ePub(epubBuffer);
               await book.ready;
               const firstSection=book.spine?.first?.();
               if(!firstSection) throw new Error('O EPUB não possui uma seção inicial de leitura.');
-
-              // O contêiner precisa estar visível e dimensionado antes de o EPUB.js criar o iframe.
-              viewer.hidden=false;
-              viewer.style.display='block';
-              status.textContent='Renderizando a primeira página…';
-              const rendition=book.renderTo(viewer,{width:'100%',height:'100%',spread:'none',flow:'paginated'});
-              rendition.themes.default({body:{background:'#fffdf8',color:'#1f2a24','font-family':'Georgia, serif','line-height':'1.6'},img:{'max-width':'100%','height':'auto'}});
+              viewer.hidden=false;viewer.style.display='block';
+              const rendition=book.renderTo(viewer,{width:'100%',height:'100%',spread:'none',flow:'paginated',manager:'default'});
+              rendition.themes.default({body:{background:'#fffdf8',color:'#1f2a24','font-family':'Georgia, serif','font-size':'100%','line-height':'1.55','padding-left':'4.5%','padding-right':'4.5%'},img:{'max-width':'100%','max-height':'90vh','height':'auto','object-fit':'contain'}});
               await rendition.display(firstSection.href);
-
-              status.hidden=true;
-              prev.disabled=false;
-              next.disabled=false;
-              prev.addEventListener('click',()=>rendition.prev());
-              next.addEventListener('click',()=>rendition.next());
-              document.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft')rendition.prev();if(e.key==='ArrowRight')rendition.next();});
-            }catch(err){
-              console.error('epub-render',err);
-              fail(err instanceof Error?`O arquivo foi liberado, mas o leitor não conseguiu abrir a obra: ${err.message}`:'O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra.');
-            }
+              status.hidden=true;prev.disabled=false;next.disabled=false;
+              const goPrev=()=>rendition.prev();const goNext=()=>rendition.next();
+              prev.addEventListener('click',goPrev);next.addEventListener('click',goNext);
+              document.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft'){e.preventDefault();goPrev();}if(e.key==='ArrowRight'){e.preventDefault();goNext();}});
+            }catch(err){console.error('epub-render',err);fail(err instanceof Error?`O arquivo foi liberado, mas o leitor não conseguiu abrir a obra: ${err.message}`:'O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra.');}
           }
         }
       }
