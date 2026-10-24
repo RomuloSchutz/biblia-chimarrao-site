@@ -14,7 +14,7 @@ const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
       <p class="note">QR code oficial vinculado ao endereço de produção do aplicativo.</p>
     </div>
     <a class="qr-card" href={appUrl} target="_blank" rel="noopener noreferrer" aria-label="Abrir aplicativo Bíblia + Chimarrão">
-      <img src="/qr-aplicativo.svg" alt="QR code oficial para acessar o aplicativo Bíblia + Chimarrão" width="320" height="320" />
+      <div id="app-qr" class="app-qr-live" aria-label="QR code oficial para acessar o aplicativo Bíblia + Chimarrão"></div>
       <strong>Escaneie para acessar</strong>
       <span>biblia-chimarrao-pwa.rommar2179.workers.dev</span>
     </a>
@@ -26,4 +26,20 @@ const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
     <article class="card"><h3>Biblioteca, livros e ideias</h3><p>Um espaço que integra obras de Romulo Schutz, biblioteca particular, ideias, reflexões e conteúdos de apoio à leitura em uma experiência conectada.</p></article>
   </div></div></section>
   <section><div class="shell split"><div><div class="eyebrow">Pausa com propósito</div><h2>Uma palavra. Uma pausa. Um encontro.</h2></div><div><p class="lead">O chimarrão aparece como símbolo cotidiano de pausa e presença — nunca como objeto religioso. A centralidade está na Palavra de Deus, na reflexão e na disposição de viver com intencionalidade.</p><p>O aplicativo organiza essa proposta de forma simples para que o conteúdo acompanhe a rotina sem competir com ela.</p><a class="btn secondary" href={appUrl} target="_blank" rel="noopener noreferrer">Conheça o aplicativo</a></div></div></section>
+  <style>
+    .app-qr-live{width:min(100%,320px);aspect-ratio:1;background:#fff;border-radius:22px;padding:16px;display:grid;place-items:center;overflow:hidden}
+    .app-qr-live canvas,.app-qr-live img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:0!important;border-radius:0!important;background:#fff!important}
+  </style>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script is:inline>
+    (function(){
+      var el=document.getElementById('app-qr');
+      if(!el) return;
+      if(typeof QRCode==='function'){
+        new QRCode(el,{text:'https://biblia-chimarrao-pwa.rommar2179.workers.dev/',width:288,height:288,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+      }else{
+        el.innerHTML='<span style="color:#17382f;text-align:center;padding:20px">Use o botão “Abrir Bíblia + Chimarrão” para acessar o aplicativo.</span>';
+      }
+    })();
+  </script>
 </Base>
