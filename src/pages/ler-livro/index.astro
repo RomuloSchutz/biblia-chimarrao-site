@@ -59,6 +59,7 @@ import Base from '../../layouts/Base.astro';
       const library = await supabase.rpc('my_book_library');
       const item = (library.data || []).find((x) => x.edition_id === editionId);
       if (item?.title) titleEl.textContent = item.title;
+      const legacyFit = /Cristo:\s*O Marco|Entre os Sistemas|Entre a Honra e a Gratidão/i.test(item?.title || '');
 
       let accessData = null;
       try {
@@ -95,61 +96,58 @@ import Base from '../../layouts/Base.astro';
           img:{'max-width':'100%','max-height':'90vh',width:'auto',height:'auto','object-fit':'contain'}
         });
 
-        const fitFixedLayout = () => {
-          if (!window.matchMedia('(max-width: 820px)').matches) return;
+        const fitLegacyPage = () => {
+          if (!legacyFit) return;
           try {
             rendition.getContents().forEach((contents) => {
               const doc = contents.document;
               const root = doc.documentElement;
               const body = doc.body;
               if (!root || !body) return;
-              const viewport = doc.querySelector('meta[name="viewport"]')?.getAttribute('content') || '';
-              const widthMatch = viewport.match(/width\s*=\s*([0-9.]+)/i);
-              const heightMatch = viewport.match(/height\s*=\s*([0-9.]+)/i);
-              const svg = doc.querySelector('svg[viewBox]');
-              const vb = svg?.getAttribute('viewBox')?.trim().split(/[\s,]+/).map(Number) || [];
-              const looksFixed = Boolean((widthMatch && heightMatch) || vb.length === 4);
-              if (!looksFixed) return;
 
-              // O EPUB.js já pode aplicar uma escala própria aos EPUBs pré-paginados.
-              // No celular medimos a página como ela realmente ficou na tela e ampliamos
-              // apenas o necessário para ocupar a área útil, evitando uma segunda redução.
               body.style.transform = 'none';
-              body.style.position = 'static';
-              body.style.width = '';
-              body.style.height = '';
-              body.style.margin = '0';
-              body.style.padding = '0';
-              body.style.overflow = 'visible';
-              root.style.width = '100%';
-              root.style.height = '100%';
+              body.style.transformOrigin = '0 0';
               root.style.overflow = 'hidden';
 
               requestAnimationFrame(() => {
-                const visual = doc.querySelector('svg, img, [style*="position: absolute"], body > div') || body;
-                const rect = visual.getBoundingClientRect();
-                if (!rect.width || !rect.height) return;
                 const frameW = Math.max(contents.window.innerWidth,1);
                 const frameH = Math.max(contents.window.innerHeight,1);
-                const scale = Math.min((frameW * .92) / rect.width,(frameH * .92) / rect.height);
-                if (!Number.isFinite(scale) || scale <= 0) return;
+                const elements = Array.from(body.querySelectorAll('*')).filter((el) => {
+                  const tag = el.tagName?.toLowerCase();
+                  if (['script','style','meta','link','head'].includes(tag)) return false;
+                  const r = el.getBoundingClientRect();
+                  if (r.width < 2 || r.height < 2) return false;
+                  const isLeaf = el.children.length === 0 || ['img','svg','canvas'].includes(tag);
+                  return isLeaf;
+                });
+                if (!elements.length) return;
 
-                body.style.position = 'absolute';
-                body.style.left = '50%';
-                body.style.top = '50%';
-                body.style.width = `${rect.width}px`;
-                body.style.height = `${rect.height}px`;
-                body.style.transformOrigin = 'center center';
-                body.style.transform = `translate(-50%, -50%) scale(${scale})`;
-                body.style.overflow = 'visible';
+                let left=Infinity,top=Infinity,right=-Infinity,bottom=-Infinity;
+                elements.forEach((el) => {
+                  const r=el.getBoundingClientRect();
+                  left=Math.min(left,r.left);top=Math.min(top,r.top);right=Math.max(right,r.right);bottom=Math.max(bottom,r.bottom);
+                });
+                const contentW=right-left;
+                const contentH=bottom-top;
+                if (!Number.isFinite(contentW) || !Number.isFinite(contentH) || contentW < 10 || contentH < 10) return;
+
+                const targetW=frameW*.90;
+                const targetH=frameH*.90;
+                const scale=Math.min(targetW/contentW,targetH/contentH);
+                if (!Number.isFinite(scale) || scale <= 0) return;
+                const tx=(frameW-contentW*scale)/2-left*scale;
+                const ty=(frameH-contentH*scale)/2-top*scale;
+                body.style.transformOrigin='0 0';
+                body.style.transform=`translate(${tx}px, ${ty}px) scale(${scale})`;
+                body.style.overflow='visible';
               });
             });
-          } catch (e) { console.warn('epub-mobile-fit',e); }
+          } catch (e) { console.warn('epub-legacy-fit',e); }
         };
 
-        rendition.on('rendered',() => setTimeout(fitFixedLayout,60));
+        rendition.on('rendered',() => setTimeout(fitLegacyPage,80));
         await rendition.display(firstSection.href);
-        setTimeout(fitFixedLayout,80);
+        setTimeout(fitLegacyPage,120);
         status.hidden = true;
         prev.disabled = false;
         next.disabled = false;
