@@ -16,13 +16,42 @@ const emBreve=[
 ---
 <Base title="Loja | Bíblia + Chimarrão" description="Compre o acesso anual Bíblia + Chimarrão e livros digitais de Romulo Schutz com a mesma conta usada no aplicativo.">
 <section class="hero compact-hero"><div class="shell split"><div><div class="eyebrow">Loja digital</div><h1>Escolha o que faz sentido para sua caminhada.</h1><p class="lead">Livro e acesso anual são produtos independentes. Você pode adquirir somente um e-book, somente a experiência anual ou combinar os dois.</p><p>A proposta da loja é simples: primeiro conhecer, depois escolher. Cada obra possui uma página própria para que você entenda o tema, a intenção e o caminho de leitura antes da compra.</p></div><div class="card"><div class="eyebrow">Uma conta</div><h3>Compre aqui. Acesse também no aplicativo.</h3><p>As aquisições ficam vinculadas à sua conta. Use o mesmo e-mail e senha no site e no aplicativo para manter sua biblioteca e seus acessos em um único lugar.</p></div></div></section>
-<section><div class="shell"><div class="eyebrow">Disponíveis</div><h2>Leituras para momentos diferentes da caminhada.</h2><p class="lead store-intro">Há livros para compreender o tempo, discernir o mundo, sustentar a esperança e cultivar uma vida de fé mais consciente. Clique em “Conhecer” para entrar na página editorial da obra antes de decidir pela compra.</p><div class="store-cover-grid">{produtos.map(p=><article class="store-cover-card" data-store-card={p.code}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><div class="store-meta"><span class="book-number">{p.tipo}</span><h3 class="store-title">{p.titulo}</h3>{p.isbn&&<small class="store-isbn">ISBN {p.isbn}</small>}<strong class="store-price" data-price={p.code}>Carregando valor...</strong></div><div class="actions" data-actions={p.code}><a class="btn secondary" href={p.href}>Conhecer</a><button class="btn primary buy-button" type="button" data-buy={p.code} disabled>Comprar</button></div></article>)}</div>
-<div class="purchase-consent" id="purchase-consent"><label><input id="purchase-accepted" type="checkbox"/> Li e aceito a <a href="/politicas/#compras" target="_blank">Política de Compra, Cancelamento e Reembolso Digital</a> e a <a href="/politicas/#licenca" target="_blank">Licença de Uso de Conteúdos Digitais</a>.</label><p id="store-message" class="form-message" role="status"></p></div></div></section>
+<section><div class="shell"><div class="eyebrow">Disponíveis</div><h2>Leituras para momentos diferentes da caminhada.</h2><p class="lead store-intro">Há livros para compreender o tempo, discernir o mundo, sustentar a esperança e cultivar uma vida de fé mais consciente. Clique em “Conhecer” para entrar na página editorial da obra antes de decidir pela compra.</p><div class="store-cover-grid">{produtos.map(p=><article class="store-cover-card" data-store-card={p.code}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><div class="store-meta"><span class="book-number">{p.tipo}</span><h3 class="store-title">{p.titulo}</h3>{p.isbn&&<small class="store-isbn">ISBN {p.isbn}</small>}<strong class="store-price" data-price={p.code}>Carregando valor...</strong></div><div class="actions" data-actions={p.code}><a class="btn secondary" href={p.href}>Conhecer</a><button class="btn primary buy-button" type="button" data-buy={p.code} disabled>Comprar</button></div></article>)}</div><p id="store-message" class="form-message" role="status"></p></div></section>
 <section class="development-section"><div class="shell"><div class="eyebrow">Pré-lançamentos</div><h2>Obras que continuam sendo construídas.</h2><p class="lead">Acompanhe os próximos títulos e conheça desde já a trajetória editorial que está sendo preparada para novas leituras.</p><div class="store-cover-grid">{emBreve.map(p=><article class="store-cover-card prelaunch-cover" data-prelaunch-title={p.titulo}><a class="store-cover-link" href={p.href}><img src={p.capa} alt={`Capa de ${p.titulo}`} loading="lazy"/></a><span class="status-badge">EM BREVE · LANÇAMENTO 2027</span><div class="prelaunch-admin-actions"></div></article>)}</div></div></section>
 <section><div class="shell split"><div><div class="eyebrow">Duas portas de entrada</div><h2>Site e aplicativo trabalham juntos.</h2></div><div><p class="lead">Quem quiser apenas um livro compra apenas o livro. Quem adquirir a Edição 2027 pode viver o devocional no aplicativo e também lê-lo pelo site usando a mesma conta.</p><p>Você escolhe a forma de entrar; o conteúdo permanece conectado à sua caminhada.</p><div class="actions"><a class="btn primary" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir aplicativo</a><a class="btn secondary" href="/devocional/">Ler no site</a></div></div></div></section>
+
+<div id="purchase-modal" class="purchase-modal" hidden aria-hidden="true">
+  <div class="purchase-modal-backdrop" data-close-purchase></div>
+  <section class="purchase-modal-panel" role="dialog" aria-modal="true" aria-labelledby="purchase-modal-title">
+    <button class="purchase-modal-close" type="button" aria-label="Fechar" data-close-purchase>×</button>
+    <div class="eyebrow">Antes de continuar</div>
+    <h2 id="purchase-modal-title">Confirme sua compra</h2>
+    <p id="purchase-product-name" class="lead"></p>
+    <p>Leia as condições aplicáveis ao conteúdo digital antes de seguir para o pagamento.</p>
+    <div class="purchase-policy-links">
+      <a class="btn secondary" href="/politicas/#compras" target="_blank" rel="noopener noreferrer">Ler política de compra</a>
+      <a class="btn secondary" href="/politicas/#licenca" target="_blank" rel="noopener noreferrer">Ler licença digital</a>
+    </div>
+    <label class="purchase-accept-line"><input id="modal-purchase-accepted" type="checkbox"/> <span>Li e aceito a Política de Compra, Cancelamento e Reembolso Digital e a Licença de Uso de Conteúdos Digitais.</span></label>
+    <p id="purchase-modal-message" class="form-message" role="status"></p>
+    <div class="actions purchase-modal-actions"><button id="purchase-cancel" class="btn secondary" type="button">Voltar</button><button id="purchase-continue" class="btn primary" type="button" disabled>Prosseguir para pagamento</button></div>
+  </section>
+</div>
+
+<style>
+ .purchase-modal[hidden]{display:none!important}.purchase-modal{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:18px}.purchase-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}.purchase-modal-panel{position:relative;z-index:1;width:min(620px,100%);max-height:88vh;overflow:auto;padding:28px;border:1px solid rgba(201,154,67,.72);border-radius:24px;background:linear-gradient(160deg,#123f31,#092d24);box-shadow:0 24px 70px rgba(0,0,0,.5)}.purchase-modal-close{position:absolute;right:14px;top:10px;border:0;background:transparent;color:#f8e8bd;font-size:34px;line-height:1;cursor:pointer}.purchase-policy-links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.purchase-accept-line{display:flex;gap:12px;align-items:flex-start;padding:16px;border:1px solid rgba(201,154,67,.38);border-radius:16px;background:rgba(255,255,255,.035)}.purchase-accept-line input{width:21px;height:21px;margin-top:2px;flex:0 0 auto}.purchase-modal-actions{margin-top:18px}.purchase-modal-actions .btn{flex:1}.purchase-modal-open{overflow:hidden}@media(max-width:640px){.purchase-modal-panel{padding:24px 18px;border-radius:18px}.purchase-policy-links{grid-template-columns:1fr}.purchase-modal-actions{display:grid;grid-template-columns:1fr}.purchase-modal-actions .btn{width:100%}}
+</style>
+
 <script>
  import { supabase } from '../../lib/supabase-browser.js';
- const message=document.querySelector('#store-message'),accepted=document.querySelector('#purchase-accepted'),consent=document.querySelector('#purchase-consent');
+ const message=document.querySelector('#store-message');
+ const modal=document.querySelector('#purchase-modal');
+ const modalAccepted=document.querySelector('#modal-purchase-accepted');
+ const modalMessage=document.querySelector('#purchase-modal-message');
+ const modalProductName=document.querySelector('#purchase-product-name');
+ const continueButton=document.querySelector('#purchase-continue');
+ const cancelButton=document.querySelector('#purchase-cancel');
+ let pendingCode='';
  const {data:catalog}=await supabase.rpc('get_commercial_catalog');
  const products=Object.fromEntries((catalog||[]).map(p=>[p.code,p]));
  const {data:{session}}=await supabase.auth.getSession();
@@ -36,60 +65,35 @@ const emBreve=[
  const normalize=(value='')=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,' ').trim().toLowerCase();
  const byEdition=new Map(library.filter(x=>x.edition_id).map(x=>[x.edition_id,x]));
  const byTitle=new Map(library.map(x=>[normalize(x.title),x]));
- const findLibraryItem=(product)=>{
-   if(product?.edition_id&&byEdition.has(product.edition_id)) return byEdition.get(product.edition_id);
-   const key=normalize(product?.title||'');
-   return byTitle.get(key)||library.find(x=>{const bookKey=normalize(x.title);return key&&bookKey&&(key.startsWith(bookKey)||bookKey.startsWith(key));})||null;
- };
+ const findLibraryItem=(product)=>{if(product?.edition_id&&byEdition.has(product.edition_id))return byEdition.get(product.edition_id);const key=normalize(product?.title||'');return byTitle.get(key)||library.find(x=>{const bookKey=normalize(x.title);return key&&bookKey&&(key.startsWith(bookKey)||bookKey.startsWith(key));})||null;};
 
- document.querySelectorAll('[data-price]').forEach(el=>{
-   const code=el.dataset.price,p=products[code],item=findLibraryItem(p);
-   const hasAccess=isAdmin||(item?.has_access===true);
-   if(hasAccess){el.textContent=isAdmin?'ACESSO DO AUTOR':'JÁ ADQUIRIDO';el.classList.add('store-access-label');return;}
-   el.textContent=p&&p.is_active?new Intl.NumberFormat('pt-BR',{style:'currency',currency:p.currency||'BRL'}).format(p.amount_cents/100):'Indisponível';
- });
+ document.querySelectorAll('[data-price]').forEach(el=>{const code=el.dataset.price,p=products[code],item=findLibraryItem(p);const hasAccess=isAdmin||(item?.has_access===true);if(hasAccess){el.textContent=isAdmin?'ACESSO DO AUTOR':'JÁ ADQUIRIDO';el.classList.add('store-access-label');return;}el.textContent=p&&p.is_active?new Intl.NumberFormat('pt-BR',{style:'currency',currency:p.currency||'BRL'}).format(p.amount_cents/100):'Indisponível';});
 
  document.querySelectorAll('[data-buy]').forEach(button=>{
-   const code=button.dataset.buy,p=products[code],card=document.querySelector(`[data-store-card="${code}"]`),actions=document.querySelector(`[data-actions="${code}"]`),item=findLibraryItem(p);
-   const hasBookAccess=isAdmin||(item?.has_access===true);
-   if(code==='app_biblia_chimarrao'&&isAdmin){
-     button.remove();
-     actions.insertAdjacentHTML('beforeend','<a class="btn primary" href="/devocional/">Abrir devocional</a>');
-     card?.classList.add('has-library-access');
-     return;
-   }
-   if(hasBookAccess&&item?.is_ready){
-     button.remove();
-     actions.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);
-     card?.classList.add('has-library-access');
-     return;
-   }
-   button.disabled=!p?.is_active;
-   button.addEventListener('click',()=>purchase(code));
+   const code=button.dataset.buy,p=products[code],card=document.querySelector(`[data-store-card="${code}"]`),actions=document.querySelector(`[data-actions="${code}"]`),item=findLibraryItem(p);const hasBookAccess=isAdmin||(item?.has_access===true);
+   if(code==='app_biblia_chimarrao'&&isAdmin){button.remove();actions.insertAdjacentHTML('beforeend','<a class="btn primary" href="/devocional/">Abrir devocional</a>');card?.classList.add('has-library-access');return;}
+   if(hasBookAccess&&item?.is_ready){button.remove();actions.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);card?.classList.add('has-library-access');return;}
+   button.disabled=!p?.is_active;button.addEventListener('click',()=>openPurchase(code));
  });
 
- if(isAdmin){
-   consent.hidden=true;
-   document.querySelectorAll('[data-prelaunch-title]').forEach(card=>{
-     const title=card.dataset.prelaunchTitle;
-     const item=byTitle.get(normalize(title));
-     if(item?.is_ready){
-       card.querySelector('.status-badge').textContent='ACESSO DO AUTOR';
-       card.querySelector('.prelaunch-admin-actions')?.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);
-       card.classList.add('has-library-access');
-     }
-   });
- }
+ if(isAdmin){document.querySelectorAll('[data-prelaunch-title]').forEach(card=>{const title=card.dataset.prelaunchTitle;const item=byTitle.get(normalize(title));if(item?.is_ready){card.querySelector('.status-badge').textContent='ACESSO DO AUTOR';card.querySelector('.prelaunch-admin-actions')?.insertAdjacentHTML('beforeend',`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(item.edition_id)}">Ler no site</a>`);card.classList.add('has-library-access');}});}
 
- async function purchase(code){
-   message.textContent='';
-   const {data:{session:currentSession}}=await supabase.auth.getSession();
-   if(!currentSession){message.textContent='Entre na sua conta antes de comprar.';setTimeout(()=>window.location.href='/entrar/',700);return;}
-   if(!accepted.checked){message.textContent='Leia e aceite as condições de compra e licença digital para continuar.';return;}
-   const button=document.querySelector(`[data-buy="${code}"]`);button.disabled=true;message.textContent='Preparando checkout seguro do Mercado Pago...';
-   const {data,error}=await supabase.functions.invoke('mercado-pago-create-order',{body:{product_code:code,accepted:true,access_token:currentSession.access_token}});
-   if(error||!data?.checkout_url){message.textContent='Não foi possível iniciar o checkout. Tente novamente.';button.disabled=false;return;}
-   window.location.href=data.checkout_url;
+ function openPurchase(code){
+   message.textContent='';pendingCode=code;modalAccepted.checked=false;continueButton.disabled=true;modalMessage.textContent='';const p=products[code];modalProductName.textContent=p?.title||'Conteúdo digital';modal.hidden=false;modal.setAttribute('aria-hidden','false');document.documentElement.classList.add('purchase-modal-open');setTimeout(()=>modalAccepted.focus(),50);
  }
+ function closePurchase(){modal.hidden=true;modal.setAttribute('aria-hidden','true');document.documentElement.classList.remove('purchase-modal-open');pendingCode='';}
+ modalAccepted?.addEventListener('change',()=>{continueButton.disabled=!modalAccepted.checked;modalMessage.textContent='';});
+ cancelButton?.addEventListener('click',closePurchase);document.querySelectorAll('[data-close-purchase]').forEach(el=>el.addEventListener('click',closePurchase));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closePurchase();});
+ continueButton?.addEventListener('click',async()=>{
+   if(!pendingCode||!modalAccepted.checked)return;
+   const {data:{session:currentSession}}=await supabase.auth.getSession();
+   if(!currentSession){modalMessage.textContent='Entre na sua conta antes de comprar.';setTimeout(()=>window.location.href='/entrar/',700);return;}
+   continueButton.disabled=true;modalMessage.textContent='Preparando checkout seguro do Mercado Pago...';
+   const code=pendingCode;
+   const {data,error}=await supabase.functions.invoke('mercado-pago-create-order',{body:{product_code:code,accepted:true,access_token:currentSession.access_token}});
+   if(error||!data?.checkout_url){modalMessage.textContent='Não foi possível iniciar o checkout. Tente novamente.';continueButton.disabled=false;return;}
+   window.location.href=data.checkout_url;
+ });
 </script>
 </Base>
