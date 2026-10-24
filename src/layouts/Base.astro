@@ -16,6 +16,9 @@ const instagramUrl = 'https://www.instagram.com/romuloschutz/';
 const youtubeUrl = 'https://www.youtube.com/@romuloschutz';
 const whatsappUrl = 'https://wa.me/5549999004892';
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const noIndexPrefixes = ['/minha-conta/', '/entrar/', '/ler-livro/'];
+const shouldNoIndex = noIndexPrefixes.some((prefix) => Astro.url.pathname.startsWith(prefix));
+const robotsContent = shouldNoIndex ? 'noindex,nofollow,noarchive' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -25,7 +28,7 @@ const structuredData = {
   ]
 };
 ---
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content="index,follow,max-image-preview:large"/><meta name="theme-color" content="#123b31"/><link rel="canonical" href={canonical}/><link rel="manifest" href="/site.webmanifest"/><link rel="icon" type="image/png" sizes="192x192" href={appIcon192}/><link rel="shortcut icon" type="image/png" href={appIcon192}/><link rel="apple-touch-icon" sizes="192x192" href={appIcon192}/><link rel="apple-touch-icon" sizes="512x512" href={appIcon512}/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:site_name" content="Bíblia + Chimarrão"/><meta property="og:locale" content="pt_BR"/><meta property="og:image" content={socialImage}/><meta property="og:image:alt" content="Bíblia + Chimarrão — projeto de Romulo Schutz"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={title}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={socialImage}/><script type="application/ld+json" set:html={JSON.stringify(structuredData)}/><script is:inline>
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="author" content="Romulo Schutz"/><meta name="robots" content={robotsContent}/><meta name="googlebot" content={robotsContent}/><meta name="theme-color" content="#123b31"/><link rel="canonical" href={canonical}/><link rel="alternate" hreflang="pt-BR" href={canonical}/><link rel="alternate" hreflang="x-default" href={canonical}/><link rel="manifest" href="/site.webmanifest"/><link rel="icon" type="image/png" sizes="192x192" href={appIcon192}/><link rel="shortcut icon" type="image/png" href={appIcon192}/><link rel="apple-touch-icon" sizes="192x192" href={appIcon192}/><link rel="apple-touch-icon" sizes="512x512" href={appIcon512}/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:site_name" content="Bíblia + Chimarrão"/><meta property="og:locale" content="pt_BR"/><meta property="og:image" content={socialImage}/><meta property="og:image:alt" content="Bíblia + Chimarrão — projeto de Romulo Schutz"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={title}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={socialImage}/><script type="application/ld+json" set:html={JSON.stringify(structuredData)}/><script is:inline>
 (function(){
   const mq=window.matchMedia('(prefers-color-scheme: dark)');
   const apply=()=>{
