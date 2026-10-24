@@ -16,9 +16,15 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
   <section class="account-library-section"><div class="eyebrow">Biblioteca vinculada à conta</div><h2>Livros adquiridos</h2><div id="book-library" class="book-grid two"></div></section>
   <section class="account-settings-section" id="configuracoes"><div class="eyebrow">Preferências da conta</div><h2>Configurações</h2><div class="settings-grid">
     <article class="card settings-card"><div class="setting-icon" aria-hidden="true">◐</div><div><h3>Aparência do site</h3><p>Escolha como o Bíblia + Chimarrão deve aparecer neste aparelho.</p><label class="setting-label" for="theme-select">Tema</label><select id="theme-select" class="setting-select"><option value="system">Usar configuração do sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select><p class="setting-help">A preferência fica salva neste navegador e pode ser alterada quando quiser.</p></div></article>
-    <article class="card settings-card"><div class="setting-icon" aria-hidden="true">✦</div><div><h3>Alterar senha</h3><p>Defina uma nova senha para a mesma conta usada no site e no aplicativo.</p><form id="password-form" class="password-form"><label>Nova senha<input id="new-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo de 8 caracteres"/></label><label>Confirmar nova senha<input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Repita a nova senha"/></label><button class="btn primary" type="submit">Atualizar senha</button><p id="password-message" class="form-message" aria-live="polite"></p></form></div></article>
+    <article class="card settings-card"><div class="setting-icon" aria-hidden="true">✦</div><div><h3>Alterar senha</h3><p>Defina uma nova senha para a mesma conta usada no site e no aplicativo.</p><form id="password-form" class="password-form"><label>Nova senha<div class="password-input-wrap"><input id="new-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo de 8 caracteres"/><button class="password-toggle" type="button" data-target="new-password" aria-label="Mostrar senha" aria-pressed="false">👁</button></div></label><label>Confirmar nova senha<div class="password-input-wrap"><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Repita a nova senha"/><button class="password-toggle" type="button" data-target="confirm-password" aria-label="Mostrar senha" aria-pressed="false">👁</button></div></label><button id="password-submit" class="btn primary" type="submit">Atualizar senha</button><p id="password-message" class="form-message" aria-live="polite"></p></form></div></article>
   </div></section>
 </div></div></section>
+<style>
+  .password-input-wrap{position:relative;display:block}
+  .password-input-wrap input{width:100%;padding-right:58px}
+  .password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:44px;height:44px;margin:0;padding:0;border:0;border-radius:999px;background:transparent;color:inherit;font-size:21px;line-height:1;cursor:pointer;display:grid;place-items:center}
+  .password-toggle:hover,.password-toggle:focus-visible{background:rgba(216,176,83,.14);outline:2px solid rgba(216,176,83,.55);outline-offset:1px}
+</style>
 <script>
  import { supabase } from '../../lib/supabase-browser.js';
  const loading=document.querySelector('#account-loading'), guest=document.querySelector('#account-guest'), content=document.querySelector('#account-content');
@@ -40,17 +46,32 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
  const applyTheme=(pref)=>{const dark=pref==='dark'||(pref==='system'&&media.matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.dataset.themePreference=pref;localStorage.setItem('bc-theme',pref);};
  if(themeSelect){themeSelect.value=localStorage.getItem('bc-theme')||'system';themeSelect.addEventListener('change',()=>applyTheme(themeSelect.value));}
 
+ document.querySelectorAll('.password-toggle').forEach(button=>button.addEventListener('click',()=>{
+   const input=document.getElementById(button.dataset.target||'');
+   if(!input)return;
+   const show=input.type==='password';
+   input.type=show?'text':'password';
+   button.setAttribute('aria-label',show?'Ocultar senha':'Mostrar senha');
+   button.setAttribute('aria-pressed',String(show));
+   button.textContent=show?'🙈':'👁';
+ }));
+
  document.querySelector('#password-form')?.addEventListener('submit',async(e)=>{
    e.preventDefault();
+   const form=e.currentTarget;
    const pass=document.querySelector('#new-password').value;
    const confirm=document.querySelector('#confirm-password').value;
    const msg=document.querySelector('#password-message');
+   const submit=document.querySelector('#password-submit');
    if(pass.length<8){msg.textContent='Use pelo menos 8 caracteres.';return;}
    if(pass!==confirm){msg.textContent='As duas senhas precisam ser iguais.';return;}
-   msg.textContent='Atualizando...';
-   const {error}=await supabase.auth.updateUser({password:pass});
-   if(error){msg.textContent='Não foi possível alterar a senha: '+error.message;return;}
-   e.currentTarget.reset();msg.textContent='Senha atualizada com sucesso.';
+   submit.disabled=true;submit.textContent='Atualizando...';msg.textContent='Atualizando...';
+   try{
+     const {error}=await supabase.auth.updateUser({password:pass});
+     if(error){msg.textContent='Não foi possível alterar a senha: '+error.message;submit.disabled=false;submit.textContent='Atualizar senha';return;}
+     form.reset();msg.textContent='Senha atualizada com sucesso. Retornando à sua conta...';
+     window.setTimeout(()=>{window.location.href='/minha-conta/';},700);
+   }catch(error){msg.textContent='Não foi possível alterar a senha agora. Tente novamente.';submit.disabled=false;submit.textContent='Atualizar senha';}
  });
 </script>
 </Base>
