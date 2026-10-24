@@ -4,42 +4,18 @@ const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
 ---
 <Base title="Aplicativo Bíblia + Chimarrão" description="Conheça o Bíblia + Chimarrão — um espaço de pausa, reflexão e encontro com Deus. Devocional anual, encontro diário, biblioteca, favoritos, anotações, caminhada, lembretes e livros em uma experiência PWA.">
   <section class="app-brand-hero"><div class="shell app-brand-grid"><div class="app-brand-copy"><div class="eyebrow">Aplicativo</div><h1>Bíblia + Chimarrão</h1><p class="app-brand-tagline">Tempo para o que realmente importa.</p><p class="lead">Uma experiência digital para acompanhar sua caminhada com Palavra, reflexão, anotações, livros e encontros diários.</p><p>O site e o aplicativo foram pensados como duas portas para a mesma jornada. Você pode conhecer os conteúdos pelo site, criar sua conta e, quando adquirir um acesso ou um livro, utilizar o mesmo login também no aplicativo.</p><div class="actions"><a class="btn primary" href={appUrl} target="_blank" rel="noopener noreferrer">Acessar o aplicativo</a><a class="btn secondary" href="/minha-conta/">Minha Conta</a></div></div><div class="app-brand-visual app-brand-visual-compact"><img src="/assets/biblia-chimarrao-horizontal.png" alt="Momento de encontro, conversa e reflexão no universo visual do Bíblia + Chimarrão"/></div></div></section>
-
-  <section><div class="shell app-access">
-    <div>
-      <div class="eyebrow">Acesso rápido</div>
-      <h2>Aponte a câmera e entre no aplicativo.</h2>
-      <p class="lead">Abra a câmera do celular, aponte para o QR code e acesse diretamente o Bíblia + Chimarrão. No próprio celular, use o botão abaixo.</p>
-      <div class="actions"><a class="btn primary" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir Bíblia + Chimarrão</a></div>
-      <p class="note">QR code oficial vinculado ao endereço de produção do aplicativo.</p>
-    </div>
-    <a class="qr-card" href={appUrl} target="_blank" rel="noopener noreferrer" aria-label="Abrir aplicativo Bíblia + Chimarrão">
-      <div id="app-qr" class="app-qr-live" aria-label="QR code oficial para acessar o aplicativo Bíblia + Chimarrão"></div>
-      <strong>Escaneie para acessar</strong>
-      <span>biblia-chimarrao-pwa.rommar2179.workers.dev</span>
-    </a>
+  <section><div class="shell app-access"><div><div class="eyebrow">Acesso rápido</div><h2>Aponte a câmera e entre no aplicativo.</h2><p class="lead">Abra a câmera do celular, aponte para o QR code e acesse diretamente o Bíblia + Chimarrão. No próprio celular, use o botão abaixo.</p><div class="actions"><a class="btn primary" href={appUrl} target="_blank" rel="noopener noreferrer">Abrir Bíblia + Chimarrão</a></div><p class="note">QR code oficial vinculado ao endereço de produção do aplicativo.</p></div>
+    <a class="qr-card" href={appUrl} target="_blank" rel="noopener noreferrer" aria-label="Abrir aplicativo Bíblia + Chimarrão"><div class="app-qr-paper"><div id="app-qr" class="app-qr-live" aria-label="QR code oficial para acessar o aplicativo Bíblia + Chimarrão"></div></div><strong>Escaneie para acessar</strong><span>biblia-chimarrao-pwa.rommar2179.workers.dev</span></a>
   </div></section>
-
-  <section><div class="shell"><div class="eyebrow">Experiência</div><h2>Mais do que abrir uma tela: criar espaço para o encontro.</h2><div class="grid-3">
-    <article class="card"><h3>Devocional e Encontro de Hoje</h3><p>O usuário encontra o devocional anual e o encontro do dia em uma navegação direta, pensada para criar constância sem transformar a experiência em obrigação.</p></article>
-    <article class="card"><h3>Minha Caminhada, Favoritos e Anotações</h3><p>Recursos para acompanhar a própria jornada, guardar encontros marcantes e registrar reflexões, orações e aprendizados ao longo do tempo.</p></article>
-    <article class="card"><h3>Biblioteca, livros e ideias</h3><p>Um espaço que integra obras de Romulo Schutz, biblioteca particular, ideias, reflexões e conteúdos de apoio à leitura em uma experiência conectada.</p></article>
-  </div></div></section>
+  <section><div class="shell"><div class="eyebrow">Experiência</div><h2>Mais do que abrir uma tela: criar espaço para o encontro.</h2><div class="grid-3"><article class="card"><h3>Devocional e Encontro de Hoje</h3><p>O usuário encontra o devocional anual e o encontro do dia em uma navegação direta, pensada para criar constância sem transformar a experiência em obrigação.</p></article><article class="card"><h3>Minha Caminhada, Favoritos e Anotações</h3><p>Recursos para acompanhar a própria jornada, guardar encontros marcantes e registrar reflexões, orações e aprendizados ao longo do tempo.</p></article><article class="card"><h3>Biblioteca, livros e ideias</h3><p>Um espaço que integra obras de Romulo Schutz, biblioteca particular, ideias, reflexões e conteúdos de apoio à leitura em uma experiência conectada.</p></article></div></div></section>
   <section><div class="shell split"><div><div class="eyebrow">Pausa com propósito</div><h2>Uma palavra. Uma pausa. Um encontro.</h2></div><div><p class="lead">O chimarrão aparece como símbolo cotidiano de pausa e presença — nunca como objeto religioso. A centralidade está na Palavra de Deus, na reflexão e na disposição de viver com intencionalidade.</p><p>O aplicativo organiza essa proposta de forma simples para que o conteúdo acompanhe a rotina sem competir com ela.</p><a class="btn secondary" href={appUrl} target="_blank" rel="noopener noreferrer">Conheça o aplicativo</a></div></div></section>
   <style>
-    .app-qr-live{width:min(100%,320px);aspect-ratio:1;background:#fff;border-radius:22px;padding:16px;display:grid;place-items:center;overflow:hidden}
-    .app-qr-live canvas,.app-qr-live img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:0!important;border-radius:0!important;background:#fff!important}
+    .qr-card .app-qr-paper{width:min(100%,320px);aspect-ratio:1;background:#fff!important;border-radius:22px;padding:16px;display:block;overflow:hidden;isolation:isolate;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+    .qr-card .app-qr-live{width:100%;height:100%;background:#fff!important;display:block!important;position:relative;z-index:2;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;color-scheme:light!important}
+    .qr-card .app-qr-live canvas,.qr-card .app-qr-live img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:contain!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#fff!important;opacity:1!important;visibility:visible!important;filter:none!important;mix-blend-mode:normal!important;transform:none!important}
   </style>
   <script is:inline src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script is:inline>
-    (function(){
-      var el=document.getElementById('app-qr');
-      if(!el) return;
-      if(typeof QRCode==='function'){
-        new QRCode(el,{text:'https://biblia-chimarrao-pwa.rommar2179.workers.dev/',width:288,height:288,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
-      }else{
-        el.innerHTML='<span style="color:#17382f;text-align:center;padding:20px">Use o botão “Abrir Bíblia + Chimarrão” para acessar o aplicativo.</span>';
-      }
-    })();
+    (function(){var el=document.getElementById('app-qr');if(!el)return;if(typeof QRCode==='function'){el.innerHTML='';new QRCode(el,{text:'https://biblia-chimarrao-pwa.rommar2179.workers.dev/',width:288,height:288,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});var fix=function(){var q=el.querySelector('canvas,img');if(q){q.style.setProperty('display','block','important');q.style.setProperty('visibility','visible','important');q.style.setProperty('opacity','1','important');q.style.setProperty('filter','none','important');q.style.setProperty('mix-blend-mode','normal','important');q.style.setProperty('background','#fff','important');}};fix();requestAnimationFrame(fix);setTimeout(fix,100);}else{el.innerHTML='<span style="color:#17382f;text-align:center;padding:20px">Use o botão “Abrir Bíblia + Chimarrão” para acessar o aplicativo.</span>';}})();
   </script>
 </Base>
