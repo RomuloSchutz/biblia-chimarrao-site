@@ -38,9 +38,106 @@ import Base from '../../layouts/Base.astro';
   <script is:inline src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
   <script>
     import { supabase } from '../../lib/supabase-browser.js';
-    const params=new URLSearchParams(window.location.search);const editionId=params.get('edition');const status=document.querySelector('#reader-status');const viewer=document.querySelector('#epub-viewer');const titleEl=document.querySelector('#reader-book-title');const prev=document.querySelector('#reader-prev');const next=document.querySelector('#reader-next');const functionUrl='https://srabzgokulsiujusbqxl.supabase.co/functions/v1/book-epub-access';const publishableKey='sb_publishable_TjLHUAq038yLQ2hqqaVZjg__GM4w2Q4';
-    const fail=(message)=>{status.textContent=message;viewer.hidden=true;status.hidden=false;};
-    if(!editionId){fail('Livro não informado. Volte para sua biblioteca e escolha uma obra.');}else{const {data:{session}}=await supabase.auth.getSession();if(!session?.user){window.location.href='/entrar/?next='+encodeURIComponent(window.location.pathname+window.location.search);}else{const library=await supabase.rpc('my_book_library');const item=(library.data||[]).find(x=>x.edition_id===editionId);if(item?.title)titleEl.textContent=item.title;let accessData=null;try{status.textContent='Liberando seu acesso ao livro…';const response=await fetch(functionUrl,{method:'POST',headers:{'Content-Type':'application/json','apikey':publishableKey},body:JSON.stringify({edition_id:editionId,access_token:session.access_token})});const contentType=response.headers.get('content-type')||'';const data=contentType.includes('application/json')?await response.json():null;if(!response.ok)throw new Error(data?.error||`Não foi possível liberar este livro (${response.status}).`);if(!data?.signed_url)throw new Error(data?.error||'O servidor não liberou o arquivo deste livro.');accessData=data;}catch(err){console.error('book-epub-access',err);fail(err instanceof Error?err.message:'Não foi possível comunicar com o servidor de leitura. Atualize a página e tente novamente.');}
-    if(accessData?.signed_url){if(typeof window.JSZip!=='function')fail('O componente de abertura do EPUB não carregou corretamente. Atualize a página e tente novamente.');else if(typeof window.ePub!=='function')fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');else{try{status.textContent='Baixando o EPUB autorizado…';const epubResponse=await fetch(accessData.signed_url,{cache:'no-store'});if(!epubResponse.ok)throw new Error(`Falha ao carregar o arquivo (${epubResponse.status}).`);const epubBuffer=await epubResponse.arrayBuffer();if(!epubBuffer.byteLength)throw new Error('O arquivo do livro está vazio.');status.textContent='Abrindo a estrutura do livro…';const book=window.ePub(epubBuffer);await book.ready;const firstSection=book.spine?.first?.();if(!firstSection)throw new Error('O EPUB não possui uma seção inicial de leitura.');viewer.hidden=false;viewer.style.display='block';const rendition=book.renderTo(viewer,{width:'100%',height:'100%',spread:'none',flow:'paginated',manager:'default'});rendition.themes.default({body:{background:'#fffdf8',color:'#1f2a24','font-family':'Georgia, serif','font-size':'100%','line-height':'1.55','padding-left':'5.5%','padding-right':'5.5%'},img:{'max-width':'100%','max-height':'90vh','height':'auto','object-fit':'contain'}});await rendition.display(firstSection.href);status.hidden=true;prev.disabled=false;next.disabled=false;const goPrev=()=>rendition.prev();const goNext=()=>rendition.next();prev.addEventListener('click',goPrev);next.addEventListener('click',goNext);document.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft'){e.preventDefault();goPrev();}if(e.key==='ArrowRight'){e.preventDefault();goNext();}});}catch(err){console.error('epub-render',err);fail(err instanceof Error?`O arquivo foi liberado, mas o leitor não conseguiu abrir a obra: ${err.message}`:'O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra.');}}}}}}
+
+    const params = new URLSearchParams(window.location.search);
+    const editionId = params.get('edition');
+    const status = document.querySelector('#reader-status');
+    const viewer = document.querySelector('#epub-viewer');
+    const titleEl = document.querySelector('#reader-book-title');
+    const prev = document.querySelector('#reader-prev');
+    const next = document.querySelector('#reader-next');
+    const functionUrl = 'https://srabzgokulsiujusbqxl.supabase.co/functions/v1/book-epub-access';
+    const publishableKey = 'sb_publishable_TjLHUAq038yLQ2hqqaVZjg__GM4w2Q4';
+
+    const fail = (message) => {
+      status.textContent = message;
+      viewer.hidden = true;
+      status.hidden = false;
+    };
+
+    async function openReader() {
+      if (!editionId) {
+        fail('Livro não informado. Volte para sua biblioteca e escolha uma obra.');
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        window.location.href = '/entrar/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+        return;
+      }
+
+      const library = await supabase.rpc('my_book_library');
+      const item = (library.data || []).find((x) => x.edition_id === editionId);
+      if (item?.title) titleEl.textContent = item.title;
+
+      let accessData = null;
+      try {
+        status.textContent = 'Liberando seu acesso ao livro…';
+        const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': publishableKey },
+          body: JSON.stringify({ edition_id: editionId, access_token: session.access_token })
+        });
+        const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await response.json() : null;
+        if (!response.ok) throw new Error(data?.error || `Não foi possível liberar este livro (${response.status}).`);
+        if (!data?.signed_url) throw new Error(data?.error || 'O servidor não liberou o arquivo deste livro.');
+        accessData = data;
+      } catch (err) {
+        console.error('book-epub-access', err);
+        fail(err instanceof Error ? err.message : 'Não foi possível comunicar com o servidor de leitura. Atualize a página e tente novamente.');
+        return;
+      }
+
+      if (typeof window.JSZip !== 'function') {
+        fail('O componente de abertura do EPUB não carregou corretamente. Atualize a página e tente novamente.');
+        return;
+      }
+      if (typeof window.ePub !== 'function') {
+        fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
+        return;
+      }
+
+      try {
+        status.textContent = 'Baixando o EPUB autorizado…';
+        const epubResponse = await fetch(accessData.signed_url, { cache: 'no-store' });
+        if (!epubResponse.ok) throw new Error(`Falha ao carregar o arquivo (${epubResponse.status}).`);
+        const epubBuffer = await epubResponse.arrayBuffer();
+        if (!epubBuffer.byteLength) throw new Error('O arquivo do livro está vazio.');
+
+        status.textContent = 'Abrindo a estrutura do livro…';
+        const book = window.ePub(epubBuffer);
+        await book.ready;
+        const firstSection = book.spine?.first?.();
+        if (!firstSection) throw new Error('O EPUB não possui uma seção inicial de leitura.');
+
+        viewer.hidden = false;
+        viewer.style.display = 'block';
+        const rendition = book.renderTo(viewer, { width: '100%', height: '100%', spread: 'none', flow: 'paginated', manager: 'default' });
+        rendition.themes.default({
+          body: { background: '#fffdf8', color: '#1f2a24', 'font-family': 'Georgia, serif', 'font-size': '100%', 'line-height': '1.55', 'padding-left': '5.5%', 'padding-right': '5.5%' },
+          img: { 'max-width': '100%', 'max-height': '90vh', height: 'auto', 'object-fit': 'contain' }
+        });
+        await rendition.display(firstSection.href);
+        status.hidden = true;
+        prev.disabled = false;
+        next.disabled = false;
+
+        const goPrev = () => rendition.prev();
+        const goNext = () => rendition.next();
+        prev.addEventListener('click', goPrev);
+        next.addEventListener('click', goNext);
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+          if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
+        });
+      } catch (err) {
+        console.error('epub-render', err);
+        fail(err instanceof Error ? `O arquivo foi liberado, mas o leitor não conseguiu abrir a obra: ${err.message}` : 'O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra.');
+      }
+    }
+
+    openReader();
   </script>
 </Base>
