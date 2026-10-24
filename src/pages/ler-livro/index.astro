@@ -197,7 +197,7 @@ import Base from '../../layouts/Base.astro';
           if (saved === 'white' || saved === 'sepia') currentTheme = saved;
         } catch {}
 
-        const paintPageTheme = () => {
+        const styleRenderedPage = () => {
           try {
             rendition.getContents().forEach((contents) => {
               const doc = contents.document;
@@ -207,10 +207,54 @@ import Base from '../../layouts/Base.astro';
 
               const bg = currentTheme === 'sepia' ? '#efe3c7' : '#ffffff';
               const fg = currentTheme === 'sepia' ? '#342d24' : '#1f2a24';
+              const pageImage = body.querySelector('.page > img');
+              const textLength = (body.textContent || '').replace(/\s+/g,'').length;
+              const imageOnlyPage = Boolean(pageImage && textLength < 80);
 
               root.style.setProperty('background-color',bg,'important');
               body.style.setProperty('background-color',bg,'important');
               body.style.setProperty('color',fg,'important');
+
+              if (imageOnlyPage && pageImage instanceof HTMLElement) {
+                const viewport = doc.querySelector('meta[name="viewport"]');
+                viewport?.setAttribute('content','width=device-width, initial-scale=1.0, maximum-scale=1.0');
+
+                root.style.setProperty('width','100%','important');
+                root.style.setProperty('height','100%','important');
+                root.style.setProperty('overflow','hidden','important');
+                body.style.setProperty('margin','0','important');
+                body.style.setProperty('padding','0','important');
+                body.style.setProperty('width','100%','important');
+                body.style.setProperty('height','100%','important');
+                body.style.setProperty('overflow','hidden','important');
+
+                const page = pageImage.parentElement;
+                if (page instanceof HTMLElement) {
+                  page.style.setProperty('margin','0','important');
+                  page.style.setProperty('padding','0','important');
+                  page.style.setProperty('width','100%','important');
+                  page.style.setProperty('height','100%','important');
+                  page.style.setProperty('display','flex','important');
+                  page.style.setProperty('align-items','center','important');
+                  page.style.setProperty('justify-content','center','important');
+                  page.style.setProperty('overflow','hidden','important');
+                  page.style.setProperty('background-color',bg,'important');
+                }
+
+                pageImage.style.setProperty('display','block','important');
+                pageImage.style.setProperty('width','100%','important');
+                pageImage.style.setProperty('height','100%','important');
+                pageImage.style.setProperty('max-width','100%','important');
+                pageImage.style.setProperty('max-height','100%','important');
+                pageImage.style.setProperty('object-fit','contain','important');
+                pageImage.style.setProperty('margin','0 auto','important');
+                pageImage.style.setProperty(
+                  'filter',
+                  currentTheme === 'sepia' ? 'sepia(.28) saturate(.78) brightness(.97)' : 'none',
+                  'important'
+                );
+                return;
+              }
 
               Array.from(body.querySelectorAll('*')).forEach((el) => {
                 if (!(el instanceof HTMLElement)) return;
@@ -228,7 +272,7 @@ import Base from '../../layouts/Base.astro';
               });
             });
           } catch (e) {
-            console.warn('epub-page-theme',e);
+            console.warn('epub-page-style',e);
           }
         };
 
@@ -241,8 +285,9 @@ import Base from '../../layouts/Base.astro';
           });
           try { localStorage.setItem(themeStorageKey,currentTheme); } catch {}
 
-          setTimeout(paintPageTheme,30);
-          setTimeout(paintPageTheme,140);
+          setTimeout(styleRenderedPage,30);
+          setTimeout(styleRenderedPage,140);
+          setTimeout(styleRenderedPage,300);
         };
 
         themeButtons.forEach((button) => {
@@ -251,12 +296,13 @@ import Base from '../../layouts/Base.astro';
 
         rendition.on('rendered',() => {
           applyTheme(currentTheme);
-          setTimeout(paintPageTheme,150);
+          setTimeout(styleRenderedPage,80);
+          setTimeout(styleRenderedPage,220);
         });
 
         await rendition.display(firstSection.href);
         applyTheme(currentTheme);
-        setTimeout(paintPageTheme,170);
+        setTimeout(styleRenderedPage,170);
 
         status.hidden = true;
         prev.disabled = false;
