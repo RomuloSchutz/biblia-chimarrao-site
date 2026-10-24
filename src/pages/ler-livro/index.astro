@@ -44,14 +44,9 @@ import Base from '../../layouts/Base.astro';
 
         let accessData=null;
         try{
-          // A Edge Function faz a autenticação internamente. O token segue no corpo,
-          // evitando que o gateway tente validar novamente o JWT do usuário.
           const response=await fetch(functionUrl,{
             method:'POST',
-            headers:{
-              'Content-Type':'application/json',
-              'apikey':publishableKey
-            },
+            headers:{'Content-Type':'application/json','apikey':publishableKey},
             body:JSON.stringify({edition_id:editionId,access_token:session.access_token})
           });
           const contentType=response.headers.get('content-type')||'';
@@ -68,18 +63,28 @@ import Base from '../../layouts/Base.astro';
           if(typeof window.ePub!=='function'){
             fail('O leitor digital não carregou corretamente. Atualize a página e tente novamente.');
           } else {
-            status.hidden=true;viewer.hidden=false;
             try{
-              const book=window.ePub(accessData.signed_url);
+              // Baixa o EPUB autorizado como um único Blob. Isso evita que o EPUB.js
+              // tente fazer leituras parciais diretamente na URL assinada do Storage.
+              status.textContent='Carregando o livro…';
+              const epubResponse=await fetch(accessData.signed_url,{cache:'no-store'});
+              if(!epubResponse.ok) throw new Error(`Falha ao carregar o arquivo (${epubResponse.status}).`);
+              const epubBlob=await epubResponse.blob();
+              if(!epubBlob.size) throw new Error('O arquivo do livro está vazio.');
+              const epubBuffer=await epubBlob.arrayBuffer();
+
+              const book=window.ePub(epubBuffer);
               const rendition=book.renderTo('epub-viewer',{width:'100%',height:'100%',spread:'auto',flow:'paginated'});
               await rendition.display();
+              status.hidden=true;
+              viewer.hidden=false;
               prev.disabled=false;next.disabled=false;
               prev.addEventListener('click',()=>rendition.prev());
               next.addEventListener('click',()=>rendition.next());
               document.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft')rendition.prev();if(e.key==='ArrowRight')rendition.next();});
             }catch(err){
-              console.error(err);
-              fail('O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra. Atualize a página e tente novamente.');
+              console.error('epub-render',err);
+              fail(err instanceof Error?`O arquivo foi liberado, mas o leitor não conseguiu abrir a obra: ${err.message}`:'O arquivo foi liberado, mas o leitor não conseguiu renderizar esta obra.');
             }
           }
         }
