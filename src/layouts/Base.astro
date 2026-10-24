@@ -10,6 +10,7 @@ const siteUrl = 'https://biblia-chimarrao-site.pages.dev';
 const appUrl = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
 const appIcon192 = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/icon-192.png';
 const appIcon512 = 'https://biblia-chimarrao-pwa.rommar2179.workers.dev/icon-512.png';
+const socialImage = `${siteUrl}/assets/biblia-chimarrao-hero-horizontal-nova.jpg.png`;
 const facebookUrl = 'https://www.facebook.com/romuloschutz';
 const instagramUrl = 'https://www.instagram.com/romuloschutz/';
 const youtubeUrl = 'https://www.youtube.com/@romuloschutz';
@@ -18,13 +19,13 @@ const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
-    {'@type':'WebSite','@id':`${siteUrl}/#website`,url:siteUrl,name:'Bíblia + Chimarrão',description:'Palavra, pausa, reflexão e encontro com Deus.',inLanguage:'pt-BR',author:{'@id':`${siteUrl}/autor/#person`}},
+    {'@type':'WebSite','@id':`${siteUrl}/#website`,url:siteUrl,name:'Bíblia + Chimarrão',description:'Palavra, pausa, reflexão e encontro com Deus.',inLanguage:'pt-BR',image:socialImage,author:{'@id':`${siteUrl}/autor/#person`}},
     {'@type':'Person','@id':`${siteUrl}/autor/#person`,name:'Romulo Schutz',url:`${siteUrl}/autor/`,email:'mailto:biblia.chimarrao@gmail.com',sameAs:[facebookUrl,instagramUrl,youtubeUrl],jobTitle:'Escritor e pesquisador'},
-    {'@type':'WebApplication',name:'Bíblia + Chimarrão',url:appUrl,applicationCategory:'LifestyleApplication',operatingSystem:'Web',inLanguage:'pt-BR',description:'Aplicativo com devocional, encontro diário, biblioteca, favoritos, anotações, caminhada, lembretes e livros.'}
+    {'@type':'WebApplication',name:'Bíblia + Chimarrão',url:appUrl,applicationCategory:'LifestyleApplication',operatingSystem:'Web',inLanguage:'pt-BR',image:socialImage,description:'Aplicativo com devocional, encontro diário, biblioteca, favoritos, anotações, caminhada, lembretes e livros.'}
   ]
 };
 ---
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content="index,follow,max-image-preview:large"/><meta name="theme-color" content="#123b31"/><link rel="canonical" href={canonical}/><link rel="manifest" href="/site.webmanifest"/><link rel="icon" type="image/png" sizes="192x192" href={appIcon192}/><link rel="shortcut icon" type="image/png" href={appIcon192}/><link rel="apple-touch-icon" sizes="192x192" href={appIcon192}/><link rel="apple-touch-icon" sizes="512x512" href={appIcon512}/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:site_name" content="Bíblia + Chimarrão"/><meta property="og:locale" content="pt_BR"/><meta name="twitter:card" content="summary_large_image"/><script type="application/ld+json" set:html={JSON.stringify(structuredData)}/><script is:inline>
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content="index,follow,max-image-preview:large"/><meta name="theme-color" content="#123b31"/><link rel="canonical" href={canonical}/><link rel="manifest" href="/site.webmanifest"/><link rel="icon" type="image/png" sizes="192x192" href={appIcon192}/><link rel="shortcut icon" type="image/png" href={appIcon192}/><link rel="apple-touch-icon" sizes="192x192" href={appIcon192}/><link rel="apple-touch-icon" sizes="512x512" href={appIcon512}/><meta property="og:type" content="website"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:site_name" content="Bíblia + Chimarrão"/><meta property="og:locale" content="pt_BR"/><meta property="og:image" content={socialImage}/><meta property="og:image:alt" content="Bíblia + Chimarrão — projeto de Romulo Schutz"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={title}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={socialImage}/><script type="application/ld+json" set:html={JSON.stringify(structuredData)}/><script is:inline>
 (function(){
   const mq=window.matchMedia('(prefers-color-scheme: dark)');
   const apply=()=>{
