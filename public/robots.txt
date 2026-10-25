@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://biblia-chimarrao-site.pages.dev/sitemap.xml
+Sitemap: https://bibliachimarrao.com.br/sitemap.xml
