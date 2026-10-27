@@ -27,7 +27,23 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
 </style>
 <script>
  import { supabase } from '../../lib/supabase-browser.js';
+ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
  const loading=document.querySelector('#account-loading'), guest=document.querySelector('#account-guest'), content=document.querySelector('#account-content');
+ const logoutButton=document.querySelector('#account-logout');
+ logoutButton?.addEventListener('click',async()=>{
+   logoutButton.disabled=true;
+   logoutButton.textContent='Saindo...';
+   try{
+     const {error}=await supabase.auth.signOut({scope:'local'});
+     if(error)throw error;
+     window.location.replace('/entrar/');
+   }catch(error){
+     logoutButton.disabled=false;
+     logoutButton.textContent='Sair';
+     console.error('Falha ao sair da conta:',error);
+     alert('Não foi possível sair da conta agora. Tente novamente.');
+   }
+ });
  const {data:{session}}=await supabase.auth.getSession();
  if(!session?.user){loading.hidden=true;guest.hidden=false;} else {
    const user=session.user;loading.hidden=true;content.hidden=false;document.querySelector('#reader-name').textContent=user.user_metadata?.full_name||user.email?.split('@')[0]||'Leitor';document.querySelector('#reader-email').textContent=user.email||'';
@@ -39,7 +55,6 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
    target.innerHTML=available.length?available.map(b=>`<article class="book-card card"><span class="book-number">${b.source==='admin'?'ACESSO DO AUTOR':'ADQUIRIDO'}</span><h3>${escapeHtml(b.title)}</h3>${b.subtitle?`<p class="kicker">${escapeHtml(b.subtitle)}</p>`:''}<p>${b.is_ready?'Arquivo digital disponível para leitura segura no site e no aplicativo.':'Obra vinculada à sua conta; arquivo em preparação.'}</p><div class="actions">${b.is_ready?`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(b.edition_id)}">Ler no site</a>`:''}<a class="btn secondary" href="${appUrl}" target="_blank" rel="noopener noreferrer">Abrir aplicativo ↗</a></div></article>`).join(''):'<article class="card"><h3>Sua biblioteca está pronta para crescer.</h3><p>Os livros comprados no site ou no aplicativo aparecerão aqui automaticamente.</p></article>';
  }
  function escapeHtml(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
- document.querySelector('#account-logout')?.addEventListener('click',async()=>{await supabase.auth.signOut();window.location.href='/entrar/';});
 
  const themeSelect=document.querySelector('#theme-select');
  const media=window.matchMedia('(prefers-color-scheme: dark)');
