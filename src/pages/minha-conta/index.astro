@@ -83,15 +83,20 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
    if(pass.length<8){msg.textContent='Use pelo menos 8 caracteres na nova senha.';return;}
    if(pass!==confirm){msg.textContent='As duas novas senhas precisam ser iguais.';return;}
    if(current===pass){msg.textContent='A nova senha precisa ser diferente da senha atual.';return;}
-   submit.disabled=true;submit.textContent='Verificando...';msg.textContent='Confirmando sua senha atual...';
+   submit.disabled=true;submit.textContent='Atualizando...';msg.textContent='Confirmando sua senha atual e atualizando...';
    try{
      const {data:{user}}=await supabase.auth.getUser();
      if(!user?.email)throw new Error('Não foi possível identificar o e-mail desta conta.');
-     const {error:verifyError}=await supabase.auth.signInWithPassword({email:user.email,password:current});
-     if(verifyError){msg.textContent='A senha atual está incorreta.';submit.disabled=false;submit.textContent='Atualizar senha';return;}
-     submit.textContent='Atualizando...';msg.textContent='Senha atual confirmada. Atualizando...';
-     const {error}=await supabase.auth.updateUser({password:pass});
-     if(error){msg.textContent='Não foi possível alterar a senha: '+error.message;submit.disabled=false;submit.textContent='Atualizar senha';return;}
+     const {error}=await supabase.auth.updateUser({
+       email:user.email,
+       currentPassword:current,
+       password:pass
+     });
+     if(error){
+       const text=String(error.message||'').toLowerCase();
+       msg.textContent=text.includes('current password')||text.includes('invalid credentials')?'A senha atual está incorreta.':'Não foi possível alterar a senha: '+error.message;
+       submit.disabled=false;submit.textContent='Atualizar senha';return;
+     }
      form.reset();msg.textContent='Senha atualizada com sucesso.';submit.textContent='Senha atualizada';
      window.setTimeout(()=>{window.location.href='/minha-conta/';},900);
    }catch(error){msg.textContent='Não foi possível alterar a senha agora. Tente novamente.';submit.disabled=false;submit.textContent='Atualizar senha';}
