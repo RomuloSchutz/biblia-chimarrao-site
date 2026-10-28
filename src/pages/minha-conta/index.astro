@@ -85,11 +85,8 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
    if(current===pass){msg.textContent='A nova senha precisa ser diferente da senha atual.';return;}
    submit.disabled=true;submit.textContent='Atualizando...';msg.textContent='Confirmando sua senha atual e atualizando...';
    try{
-     const {data:{user}}=await supabase.auth.getUser();
-     if(!user?.email)throw new Error('Não foi possível identificar o e-mail desta conta.');
      const {error}=await supabase.auth.updateUser({
-       email:user.email,
-       currentPassword:current,
+       current_password:current,
        password:pass
      });
      if(error){
