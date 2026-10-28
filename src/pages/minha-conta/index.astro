@@ -16,7 +16,7 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
   <section class="account-library-section"><div class="eyebrow">Biblioteca vinculada à conta</div><h2>Livros adquiridos</h2><div id="book-library" class="book-grid two"></div></section>
   <section class="account-settings-section" id="configuracoes"><div class="eyebrow">Preferências da conta</div><h2>Configurações</h2><div class="settings-grid">
     <article class="card settings-card"><div class="setting-icon" aria-hidden="true">◐</div><div><h3>Aparência do site</h3><p>Escolha como o Bíblia + Chimarrão deve aparecer neste aparelho.</p><label class="setting-label" for="theme-select">Tema</label><select id="theme-select" class="setting-select"><option value="system">Usar configuração do sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select><p class="setting-help">A preferência fica salva neste navegador e pode ser alterada quando quiser.</p></div></article>
-    <article class="card settings-card"><div class="setting-icon" aria-hidden="true">✦</div><div><h3>Alterar senha</h3><p>Defina uma nova senha para a mesma conta usada no site e no aplicativo.</p><form id="password-form" class="password-form"><label>Nova senha<div class="password-input-wrap"><input id="new-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo de 8 caracteres"/><button class="password-toggle" type="button" data-target="new-password" aria-label="Mostrar senha" aria-pressed="false">👁</button></div></label><label>Confirmar nova senha<div class="password-input-wrap"><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Repita a nova senha"/><button class="password-toggle" type="button" data-target="confirm-password" aria-label="Mostrar senha" aria-pressed="false">👁</button></div></label><button id="password-submit" class="btn primary" type="submit">Atualizar senha</button><p id="password-message" class="form-message" aria-live="polite"></p></form></div></article>
+    <article class="card settings-card"><div class="setting-icon" aria-hidden="true">✦</div><div><h3>Alterar senha</h3><p>Por segurança, confirme sua senha atual antes de definir uma nova senha para a mesma conta usada no site e no aplicativo.</p><form id="password-form" class="password-form"><label>Senha atual<div class="password-input-wrap"><input id="current-password" type="password" autocomplete="current-password" required placeholder="Digite sua senha atual"/><button class="password-toggle" type="button" data-target="current-password" aria-label="Mostrar senha atual" aria-pressed="false">👁</button></div></label><label>Nova senha<div class="password-input-wrap"><input id="new-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo de 8 caracteres"/><button class="password-toggle" type="button" data-target="new-password" aria-label="Mostrar nova senha" aria-pressed="false">👁</button></div></label><label>Confirmar nova senha<div class="password-input-wrap"><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Repita a nova senha"/><button class="password-toggle" type="button" data-target="confirm-password" aria-label="Mostrar confirmação da senha" aria-pressed="false">👁</button></div></label><button id="password-submit" class="btn primary" type="submit">Atualizar senha</button><p id="password-message" class="form-message" aria-live="polite"></p></form></div></article>
   </div></section>
 </div></div></section>
 <style>
@@ -74,18 +74,26 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
  document.querySelector('#password-form')?.addEventListener('submit',async(e)=>{
    e.preventDefault();
    const form=e.currentTarget;
+   const current=document.querySelector('#current-password').value;
    const pass=document.querySelector('#new-password').value;
    const confirm=document.querySelector('#confirm-password').value;
    const msg=document.querySelector('#password-message');
    const submit=document.querySelector('#password-submit');
-   if(pass.length<8){msg.textContent='Use pelo menos 8 caracteres.';return;}
-   if(pass!==confirm){msg.textContent='As duas senhas precisam ser iguais.';return;}
-   submit.disabled=true;submit.textContent='Atualizando...';msg.textContent='Atualizando...';
+   if(!current){msg.textContent='Digite sua senha atual.';return;}
+   if(pass.length<8){msg.textContent='Use pelo menos 8 caracteres na nova senha.';return;}
+   if(pass!==confirm){msg.textContent='As duas novas senhas precisam ser iguais.';return;}
+   if(current===pass){msg.textContent='A nova senha precisa ser diferente da senha atual.';return;}
+   submit.disabled=true;submit.textContent='Verificando...';msg.textContent='Confirmando sua senha atual...';
    try{
+     const {data:{user}}=await supabase.auth.getUser();
+     if(!user?.email)throw new Error('Não foi possível identificar o e-mail desta conta.');
+     const {error:verifyError}=await supabase.auth.signInWithPassword({email:user.email,password:current});
+     if(verifyError){msg.textContent='A senha atual está incorreta.';submit.disabled=false;submit.textContent='Atualizar senha';return;}
+     submit.textContent='Atualizando...';msg.textContent='Senha atual confirmada. Atualizando...';
      const {error}=await supabase.auth.updateUser({password:pass});
      if(error){msg.textContent='Não foi possível alterar a senha: '+error.message;submit.disabled=false;submit.textContent='Atualizar senha';return;}
-     form.reset();msg.textContent='Senha atualizada com sucesso. Retornando à sua conta...';
-     window.setTimeout(()=>{window.location.href='/minha-conta/';},700);
+     form.reset();msg.textContent='Senha atualizada com sucesso.';submit.textContent='Senha atualizada';
+     window.setTimeout(()=>{window.location.href='/minha-conta/';},900);
    }catch(error){msg.textContent='Não foi possível alterar a senha agora. Tente novamente.';submit.disabled=false;submit.textContent='Atualizar senha';}
  });
 </script>
