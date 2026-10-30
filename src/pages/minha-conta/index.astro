@@ -7,7 +7,7 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
 <section><div class="shell"><div id="account-loading" class="account-panel"><p>Verificando sua conta...</p></div>
 <div id="account-guest" class="account-panel" hidden><h2>Entre para continuar.</h2><p>Use o mesmo e-mail e senha do aplicativo Bíblia + Chimarrão.</p><div class="actions"><a class="btn primary" href="/entrar/">Entrar ou criar conta</a></div></div>
 <div id="account-content" hidden>
-  <div class="account-summary"><div><div class="eyebrow">Conta conectada</div><h2 id="reader-name">Leitor</h2><p id="reader-email"></p></div><button id="account-logout" class="btn secondary" type="button">Sair</button></div>
+  <div class="account-summary"><div><div class="eyebrow">Conta conectada</div><h2 id="reader-name">Leitor</h2><p id="reader-email"></p><div id="admin-entry" class="actions" hidden><a class="btn primary" href="/admin/">Painel administrativo</a></div></div><button id="account-logout" class="btn secondary" type="button">Sair</button></div>
   <div class="grid-3 account-access-grid">
     <article class="card"><div class="eyebrow">Devocional 2027</div><h3 id="annual-title">Bíblia + Chimarrão — Edição 2027</h3><p id="annual-status">Verificando acesso...</p><div id="annual-actions" class="actions"></div></article>
     <article class="card"><div class="eyebrow">Meus livros</div><h3>Sua biblioteca digital</h3><p id="books-status">Verificando seus livros...</p><div class="actions"><a class="btn secondary" href="#book-library">Ver minha biblioteca</a></div></article>
@@ -47,56 +47,28 @@ const appUrl='https://biblia-chimarrao-pwa.rommar2179.workers.dev/';
  const {data:{session}}=await supabase.auth.getSession();
  if(!session?.user){loading.hidden=true;guest.hidden=false;} else {
    const user=session.user;loading.hidden=true;content.hidden=false;document.querySelector('#reader-name').textContent=user.user_metadata?.full_name||user.email?.split('@')[0]||'Leitor';document.querySelector('#reader-email').textContent=user.email||'';
-   const annual=await supabase.rpc('get_my_annual_access',{target_year:2027});
+   const [adminResult,annual,library]=await Promise.all([supabase.rpc('is_app_admin'),supabase.rpc('get_my_annual_access',{target_year:2027}),supabase.rpc('my_book_library')]);
+   const isAdmin=adminResult.data===true;
+   if(isAdmin){document.querySelector('#admin-entry').hidden=false;}
    const row=annual.data?.[0];const annualStatus=document.querySelector('#annual-status');const annualActions=document.querySelector('#annual-actions');
    if(row?.allowed){annualStatus.textContent='Acesso liberado. Você pode ler a Edição 2027 pelo site ou pelo aplicativo.';annualActions.innerHTML='<a class="btn primary" href="/devocional/">Ler no site</a>';} else {annualStatus.textContent='A Edição 2027 ainda não está vinculada a esta conta.';annualActions.innerHTML='<a class="btn primary" href="/loja/">Conhecer acesso 2027</a>';}
-   const library=await supabase.rpc('my_book_library');const available=(library.data||[]).filter(x=>x.has_access);document.querySelector('#books-status').textContent=available.length?`${available.length} obra(s) disponível(is) nesta conta.`:'Você ainda não possui livros digitais vinculados a esta conta.';
+   const available=(library.data||[]).filter(x=>x.has_access);document.querySelector('#books-status').textContent=available.length?`${available.length} obra(s) disponível(is) nesta conta.`:'Você ainda não possui livros digitais vinculados a esta conta.';
    const target=document.querySelector('#book-library');
    target.innerHTML=available.length?available.map(b=>`<article class="book-card card"><span class="book-number">${b.source==='admin'?'ACESSO DO AUTOR':'ADQUIRIDO'}</span><h3>${escapeHtml(b.title)}</h3>${b.subtitle?`<p class="kicker">${escapeHtml(b.subtitle)}</p>`:''}<p>${b.is_ready?'Arquivo digital disponível para leitura segura no site e no aplicativo.':'Obra vinculada à sua conta; arquivo em preparação.'}</p><div class="actions">${b.is_ready?`<a class="btn primary" href="/ler-livro/?edition=${encodeURIComponent(b.edition_id)}">Ler no site</a>`:''}<a class="btn secondary" href="${appUrl}" target="_blank" rel="noopener noreferrer">Abrir aplicativo ↗</a></div></article>`).join(''):'<article class="card"><h3>Sua biblioteca está pronta para crescer.</h3><p>Os livros comprados no site ou no aplicativo aparecerão aqui automaticamente.</p></article>';
  }
  function escapeHtml(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-
  const themeSelect=document.querySelector('#theme-select');
  const media=window.matchMedia('(prefers-color-scheme: dark)');
  const applyTheme=(pref)=>{const dark=pref==='dark'||(pref==='system'&&media.matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.dataset.themePreference=pref;localStorage.setItem('bc-theme',pref);};
  if(themeSelect){themeSelect.value=localStorage.getItem('bc-theme')||'system';themeSelect.addEventListener('change',()=>applyTheme(themeSelect.value));}
-
  document.querySelectorAll('.password-toggle').forEach(button=>button.addEventListener('click',()=>{
-   const input=document.getElementById(button.dataset.target||'');
-   if(!input)return;
-   const show=input.type==='password';
-   input.type=show?'text':'password';
-   button.setAttribute('aria-label',show?'Ocultar senha':'Mostrar senha');
-   button.setAttribute('aria-pressed',String(show));
-   button.textContent=show?'🙈':'👁';
+   const input=document.getElementById(button.dataset.target||'');if(!input)return;const show=input.type==='password';input.type=show?'text':'password';button.setAttribute('aria-label',show?'Ocultar senha':'Mostrar senha');button.setAttribute('aria-pressed',String(show));button.textContent=show?'🙈':'👁';
  }));
-
  document.querySelector('#password-form')?.addEventListener('submit',async(e)=>{
-   e.preventDefault();
-   const form=e.currentTarget;
-   const current=document.querySelector('#current-password').value;
-   const pass=document.querySelector('#new-password').value;
-   const confirm=document.querySelector('#confirm-password').value;
-   const msg=document.querySelector('#password-message');
-   const submit=document.querySelector('#password-submit');
-   if(!current){msg.textContent='Digite sua senha atual.';return;}
-   if(pass.length<8){msg.textContent='Use pelo menos 8 caracteres na nova senha.';return;}
-   if(pass!==confirm){msg.textContent='As duas novas senhas precisam ser iguais.';return;}
-   if(current===pass){msg.textContent='A nova senha precisa ser diferente da senha atual.';return;}
+   e.preventDefault();const form=e.currentTarget;const current=document.querySelector('#current-password').value;const pass=document.querySelector('#new-password').value;const confirm=document.querySelector('#confirm-password').value;const msg=document.querySelector('#password-message');const submit=document.querySelector('#password-submit');
+   if(!current){msg.textContent='Digite sua senha atual.';return;}if(pass.length<8){msg.textContent='Use pelo menos 8 caracteres na nova senha.';return;}if(pass!==confirm){msg.textContent='As duas novas senhas precisam ser iguais.';return;}if(current===pass){msg.textContent='A nova senha precisa ser diferente da senha atual.';return;}
    submit.disabled=true;submit.textContent='Atualizando...';msg.textContent='Confirmando sua senha atual e atualizando...';
-   try{
-     const {error}=await supabase.auth.updateUser({
-       current_password:current,
-       password:pass
-     });
-     if(error){
-       const text=String(error.message||'').toLowerCase();
-       msg.textContent=text.includes('current password')||text.includes('invalid credentials')?'A senha atual está incorreta.':'Não foi possível alterar a senha: '+error.message;
-       submit.disabled=false;submit.textContent='Atualizar senha';return;
-     }
-     form.reset();msg.textContent='Senha atualizada com sucesso.';submit.textContent='Senha atualizada';
-     window.setTimeout(()=>{window.location.href='/minha-conta/';},900);
-   }catch(error){msg.textContent='Não foi possível alterar a senha agora. Tente novamente.';submit.disabled=false;submit.textContent='Atualizar senha';}
+   try{const {error}=await supabase.auth.updateUser({current_password:current,password:pass});if(error){const text=String(error.message||'').toLowerCase();msg.textContent=text.includes('current password')||text.includes('invalid credentials')?'A senha atual está incorreta.':'Não foi possível alterar a senha: '+error.message;submit.disabled=false;submit.textContent='Atualizar senha';return;}form.reset();msg.textContent='Senha atualizada com sucesso.';submit.textContent='Senha atualizada';window.setTimeout(()=>{window.location.href='/minha-conta/';},900);}catch(error){msg.textContent='Não foi possível alterar a senha agora. Tente novamente.';submit.disabled=false;submit.textContent='Atualizar senha';}
  });
 </script>
 </Base>
