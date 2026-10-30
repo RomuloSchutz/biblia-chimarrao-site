@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="Administração | Bíblia + Chimarrão" description="Painel administrativo protegido do Bíblia + Chimarrão.">
+<section class="hero compact-hero"><div class="shell"><div class="eyebrow">Administração</div><h1>Painel do administrador</h1><p class="lead">Área reservada para a administração do Bíblia + Chimarrão.</p></div></section>
+<section><div class="shell">
+  <div id="admin-loading" class="card"><h2>Verificando acesso…</h2><p>Aguarde enquanto confirmamos sua autorização administrativa.</p></div>
+  <div id="admin-denied" class="card" hidden><div class="eyebrow">Acesso restrito</div><h2>Esta área é exclusiva do administrador.</h2><p>Entre com a mesma conta administrativa usada no aplicativo Bíblia + Chimarrão.</p><div class="actions"><a class="btn primary" href="/entrar/?redirect=/admin/">Entrar</a><a class="btn secondary" href="/minha-conta/">Minha Conta</a></div></div>
+  <div id="admin-content" hidden>
+    <div class="admin-heading"><div><div class="eyebrow">Acesso confirmado</div><h2>Administração do site</h2><p id="admin-user" class="lead"></p></div><a class="btn secondary" href="/minha-conta/">Voltar à Minha Conta</a></div>
+    <div class="grid-3 admin-grid">
+      <article class="card"><div class="admin-icon" aria-hidden="true">R$</div><h3>Catálogo e preços</h3><p>Consulte os produtos ativos e os valores atualmente exibidos na loja.</p><div id="catalog-summary" class="admin-summary">Carregando catálogo…</div><div class="actions"><a class="btn primary" href="/loja/">Abrir loja</a></div></article>
+      <article class="card"><div class="admin-icon" aria-hidden="true">▣</div><h3>Conteúdo e livros</h3><p>Confira sua biblioteca administrativa e os títulos já liberados para leitura.</p><div id="library-summary" class="admin-summary">Carregando biblioteca…</div><div class="actions"><a class="btn primary" href="/minha-conta/#book-library">Ver biblioteca</a></div></article>
+      <article class="card"><div class="admin-icon" aria-hidden="true">↗</div><h3>Aplicativo</h3><p>Abra o painel administrativo do aplicativo usando a mesma conta.</p><div class="actions"><a class="btn primary" href="https://biblia-chimarrao-pwa.rommar2179.workers.dev/" target="_blank" rel="noopener noreferrer">Abrir aplicativo</a></div></article>
+    </div>
+    <div class="card admin-note"><div class="eyebrow">Primeira etapa</div><h3>Painel protegido ativado</h3><p>Esta primeira versão estabelece o acesso administrativo no site sem duplicar usuários ou senhas. As próximas ferramentas de edição serão acrescentadas aqui de forma controlada, sem expor funções administrativas aos leitores.</p></div>
+  </div>
+</div></section>
+<style>
+.admin-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:28px}.admin-grid{align-items:stretch}.admin-grid .card{display:flex;flex-direction:column}.admin-grid .actions{margin-top:auto;padding-top:18px}.admin-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px;background:rgba(216,176,83,.14);border:1px solid rgba(216,176,83,.4);font-weight:800;color:#e4c16f}.admin-summary{margin:12px 0 6px;font-weight:700}.admin-note{margin-top:28px}@media(max-width:720px){.admin-heading{display:block}.admin-heading>.btn{margin-top:14px}.admin-grid{grid-template-columns:1fr!important}}
+</style>
+<script>
+ import { supabase } from '../../lib/supabase-browser.js';
+ const loading=document.querySelector('#admin-loading');
+ const denied=document.querySelector('#admin-denied');
+ const content=document.querySelector('#admin-content');
+ const {data:{session}}=await supabase.auth.getSession();
+ if(!session?.user){loading.hidden=true;denied.hidden=false;}else{
+   const {data:isAdmin,error:adminError}=await supabase.rpc('is_app_admin');
+   if(adminError||isAdmin!==true){loading.hidden=true;denied.hidden=false;}else{
+     loading.hidden=true;content.hidden=false;
+     document.querySelector('#admin-user').textContent=session.user.email||'Conta administrativa';
+     const [catalogResult,libraryResult]=await Promise.all([supabase.rpc('get_commercial_catalog'),supabase.rpc('my_book_library')]);
+     const catalog=(catalogResult.data||[]).filter(p=>p.is_active);
+     const devotional=catalog.find(p=>p.code==='devocional_chimarrao_com_deus_2027');
+     const price=devotional?new Intl.NumberFormat('pt-BR',{style:'currency',currency:devotional.currency||'BRL'}).format(devotional.amount_cents/100):null;
+     document.querySelector('#catalog-summary').textContent=`${catalog.length} produto(s) ativo(s)${price?` · Devocional: ${price}`:''}.`;
+     const library=(libraryResult.data||[]).filter(x=>x.has_access===true);
+     const ready=library.filter(x=>x.is_ready===true).length;
+     document.querySelector('#library-summary').textContent=`${library.length} obra(s) com acesso · ${ready} pronta(s) para leitura.`;
+   }
+ }
+</script>
+</Base>
