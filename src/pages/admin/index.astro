@@ -9,16 +9,16 @@ import Base from '../../layouts/Base.astro';
   <div id="admin-content" hidden>
     <div class="admin-heading"><div><div class="eyebrow">Acesso confirmado</div><h2>Administração do site</h2><p id="admin-user" class="lead"></p></div><a class="btn secondary" href="/minha-conta/">Voltar à Minha Conta</a></div>
     <div class="grid-3 admin-grid">
-      <article class="card"><div class="admin-icon" aria-hidden="true">R$</div><h3>Catálogo e preços</h3><p>Altere os preços exibidos na loja. A mudança é aplicada ao catálogo comercial usado pelo site.</p><div id="catalog-summary" class="admin-summary">Carregando catálogo…</div><div class="actions"><a class="btn secondary" href="#catalog-editor">Editar preços</a><a class="btn primary" href="/loja/">Abrir loja</a></div></article>
+      <article class="card"><div class="admin-icon" aria-hidden="true">R$</div><h3>Catálogo e lançamentos</h3><p>Defina preços e libere ou retire produtos da loja quando desejar.</p><div id="catalog-summary" class="admin-summary">Carregando catálogo…</div><div class="actions"><a class="btn secondary" href="#catalog-editor">Gerenciar catálogo</a><a class="btn primary" href="/loja/">Abrir loja</a></div></article>
       <article class="card"><div class="admin-icon" aria-hidden="true">▣</div><h3>Conteúdo e livros</h3><p>Confira sua biblioteca administrativa e os títulos já liberados para leitura.</p><div id="library-summary" class="admin-summary">Carregando biblioteca…</div><div class="actions"><a class="btn primary" href="/minha-conta/#book-library">Ver biblioteca</a></div></article>
       <article class="card"><div class="admin-icon" aria-hidden="true">↗</div><h3>Aplicativo</h3><p>Abra o painel administrativo do aplicativo usando a mesma conta.</p><div class="actions"><a class="btn primary" href="https://biblia-chimarrao-pwa.rommar2179.workers.dev/" target="_blank" rel="noopener noreferrer">Abrir aplicativo</a></div></article>
     </div>
-    <section id="catalog-editor" class="card catalog-editor"><div class="eyebrow">Catálogo comercial</div><h2>Editar preços</h2><p>Informe o novo valor em reais e confirme em <strong>Salvar preço</strong>. O sistema valida novamente sua conta de administrador antes de gravar.</p><div id="catalog-editor-list" class="catalog-editor-list"><p>Carregando produtos…</p></div><p id="catalog-message" class="form-message" role="status" aria-live="polite"></p></section>
+    <section id="catalog-editor" class="card catalog-editor"><div class="eyebrow">Catálogo comercial</div><h2>Preços e lançamentos</h2><p>Produtos em <strong>Em breve</strong> permanecem fora da venda. Quando chegar o lançamento, informe um preço maior que zero e clique em <strong>Liberar venda</strong>.</p><div id="catalog-editor-list" class="catalog-editor-list"><p>Carregando produtos…</p></div><p id="catalog-message" class="form-message" role="status" aria-live="polite"></p></section>
     <div class="card admin-note"><div class="eyebrow">Administração protegida</div><h3>Uma conta para administrar site e aplicativo</h3><p>As alterações comerciais desta área usam a mesma autorização administrativa já vinculada à sua conta. Leitores comuns não podem executar as funções de edição.</p></div>
   </div>
 </div></section>
 <style>
-.admin-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:28px}.admin-grid{align-items:stretch}.admin-grid .card{display:flex;flex-direction:column}.admin-grid .actions{margin-top:auto;padding-top:18px}.admin-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px;background:rgba(216,176,83,.14);border:1px solid rgba(216,176,83,.4);font-weight:800;color:#e4c16f}.admin-summary{margin:12px 0 6px;font-weight:700}.catalog-editor{margin-top:28px}.catalog-editor-list{display:grid;gap:12px;margin-top:20px}.catalog-product{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:14px;align-items:end;padding:16px;border:1px solid rgba(216,176,83,.28);border-radius:16px;background:rgba(255,255,255,.025)}.catalog-product h3{margin:0 0 4px}.catalog-product small{opacity:.72}.catalog-price-field{display:grid;gap:6px;font-weight:700}.catalog-price-field input{width:100%;min-height:46px;padding:10px 12px;border-radius:10px}.catalog-product .btn{min-height:46px}.admin-note{margin-top:28px}@media(max-width:720px){.admin-heading{display:block}.admin-heading>.btn{margin-top:14px}.admin-grid{grid-template-columns:1fr!important}.catalog-product{grid-template-columns:1fr}.catalog-product .btn{width:100%}}
+.admin-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:28px}.admin-grid{align-items:stretch}.admin-grid .card{display:flex;flex-direction:column}.admin-grid .actions{margin-top:auto;padding-top:18px}.admin-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px;background:rgba(216,176,83,.14);border:1px solid rgba(216,176,83,.4);font-weight:800;color:#e4c16f}.admin-summary{margin:12px 0 6px;font-weight:700}.catalog-editor{margin-top:28px}.catalog-editor-list{display:grid;gap:12px;margin-top:20px}.catalog-product{display:grid;grid-template-columns:minmax(0,1fr) 150px auto auto;gap:14px;align-items:end;padding:16px;border:1px solid rgba(216,176,83,.28);border-radius:16px;background:rgba(255,255,255,.025)}.catalog-product h3{margin:0 0 4px}.catalog-product small{opacity:.72}.catalog-status{display:inline-block;margin-top:7px;padding:4px 9px;border-radius:999px;border:1px solid rgba(216,176,83,.35);font-size:.78rem;font-weight:800}.catalog-status.active{background:rgba(65,145,90,.16)}.catalog-price-field{display:grid;gap:6px;font-weight:700}.catalog-price-field input{width:100%;min-height:46px;padding:10px 12px;border-radius:10px}.catalog-product .btn{min-height:46px}.admin-note{margin-top:28px}@media(max-width:900px){.catalog-product{grid-template-columns:1fr 150px auto}}@media(max-width:720px){.admin-heading{display:block}.admin-heading>.btn{margin-top:14px}.admin-grid{grid-template-columns:1fr!important}.catalog-product{grid-template-columns:1fr}.catalog-product .btn{width:100%}}
 </style>
 <script>
  import { supabase } from '../../lib/supabase-browser.js';
@@ -33,44 +33,33 @@ import Base from '../../layouts/Base.astro';
  if(!session?.user){loading.hidden=true;denied.hidden=false;}else{
    const {data:isAdmin,error:adminError}=await supabase.rpc('is_app_admin');
    if(adminError||isAdmin!==true){loading.hidden=true;denied.hidden=false;}else{
-     loading.hidden=true;content.hidden=false;
-     document.querySelector('#admin-user').textContent=session.user.email||'Conta administrativa';
-     await loadDashboard();
+     loading.hidden=true;content.hidden=false;document.querySelector('#admin-user').textContent=session.user.email||'Conta administrativa';await loadDashboard();
    }
  }
  async function loadDashboard(){
    const [catalogResult,libraryResult]=await Promise.all([supabase.rpc('get_commercial_catalog'),supabase.rpc('my_book_library')]);
-   catalog=catalogResult.data||[];
-   const active=catalog.filter(p=>p.is_active);
-   const devotional=catalog.find(p=>p.code==='devocional_chimarrao_com_deus_2027');
-   const price=devotional?money.format(devotional.amount_cents/100):null;
-   document.querySelector('#catalog-summary').textContent=`${active.length} produto(s) ativo(s)${price?` · Devocional: ${price}`:''}.`;
-   renderCatalog();
-   const library=(libraryResult.data||[]).filter(x=>x.has_access===true);
-   const ready=library.filter(x=>x.is_ready===true).length;
-   document.querySelector('#library-summary').textContent=`${library.length} obra(s) com acesso · ${ready} pronta(s) para leitura.`;
+   catalog=catalogResult.data||[];updateSummary();renderCatalog();
+   const library=(libraryResult.data||[]).filter(x=>x.has_access===true);const ready=library.filter(x=>x.is_ready===true).length;document.querySelector('#library-summary').textContent=`${library.length} obra(s) com acesso · ${ready} pronta(s) para leitura.`;
  }
+ function updateSummary(){const active=catalog.filter(p=>p.is_active);const future=catalog.filter(p=>!p.is_active);document.querySelector('#catalog-summary').textContent=`${active.length} produto(s) à venda · ${future.length} em breve.`;}
  function renderCatalog(){
    if(!catalog.length){catalogList.innerHTML='<p>Nenhum produto encontrado no catálogo.</p>';return;}
-   catalogList.innerHTML=catalog.map(p=>`<div class="catalog-product" data-product="${escapeHtml(p.code)}"><div><h3>${escapeHtml(p.title)}</h3><small>${p.is_active?'Disponível na loja':'Indisponível'} · ${escapeHtml(p.code)}</small></div><label class="catalog-price-field">Preço (R$)<input type="number" inputmode="decimal" min="0" step="0.01" value="${(p.amount_cents/100).toFixed(2)}" data-price-input="${escapeHtml(p.code)}" aria-label="Preço de ${escapeHtml(p.title)}"></label><button class="btn primary" type="button" data-save-price="${escapeHtml(p.code)}">Salvar preço</button></div>`).join('');
-   catalogList.querySelectorAll('[data-save-price]').forEach(button=>button.addEventListener('click',()=>savePrice(button)));
+   catalogList.innerHTML=catalog.map(p=>`<div class="catalog-product" data-product="${escapeHtml(p.code)}"><div><h3>${escapeHtml(p.title)}</h3><small>${escapeHtml(p.code)}</small><br><span class="catalog-status ${p.is_active?'active':''}">${p.is_active?'À venda':'Em breve'}</span></div><label class="catalog-price-field">Preço (R$)<input type="number" inputmode="decimal" min="0" step="0.01" value="${(p.amount_cents/100).toFixed(2)}" data-price-input="${escapeHtml(p.code)}" aria-label="Preço de ${escapeHtml(p.title)}"></label><button class="btn secondary" type="button" data-save-price="${escapeHtml(p.code)}">Salvar preço</button><button class="btn ${p.is_active?'secondary':'primary'}" type="button" data-toggle-product="${escapeHtml(p.code)}">${p.is_active?'Retirar da venda':'Liberar venda'}</button></div>`).join('');
+   catalogList.querySelectorAll('[data-save-price]').forEach(button=>button.addEventListener('click',()=>saveProduct(button,false)));
+   catalogList.querySelectorAll('[data-toggle-product]').forEach(button=>button.addEventListener('click',()=>saveProduct(button,true)));
  }
- async function savePrice(button){
-   const code=button.dataset.savePrice;
-   const product=catalog.find(p=>p.code===code);
-   const input=catalogList.querySelector(`[data-price-input="${CSS.escape(code)}"]`);
-   const value=Number(input?.value);
+ async function saveProduct(button,toggle){
+   const code=toggle?button.dataset.toggleProduct:button.dataset.savePrice;const product=catalog.find(p=>p.code===code);const input=catalogList.querySelector(`[data-price-input="${CSS.escape(code)}"]`);const value=Number(input?.value);
    if(!Number.isFinite(value)||value<0){catalogMessage.textContent='Informe um preço válido.';input?.focus();return;}
-   const cents=Math.round(value*100);
-   if(!window.confirm(`Alterar o preço de “${product?.title||code}” para ${money.format(cents/100)}?`))return;
-   button.disabled=true;button.textContent='Salvando…';catalogMessage.textContent='Atualizando o catálogo…';
-   const {data,error}=await supabase.rpc('admin_update_commercial_product',{product_code:code,new_amount_cents:cents,new_is_active:product?.is_active??null});
-   if(error){catalogMessage.textContent='Não foi possível alterar o preço: '+error.message;button.disabled=false;button.textContent='Salvar preço';return;}
-   const updated=Array.isArray(data)?data[0]:data;
-   if(updated){catalog=catalog.map(p=>p.code===code?{...p,...updated}:p);}
-   catalogMessage.textContent=`Preço de “${product?.title||code}” atualizado para ${money.format(cents/100)}.`;
-   renderCatalog();
-   const active=catalog.filter(p=>p.is_active);const devotional=catalog.find(p=>p.code==='devocional_chimarrao_com_deus_2027');document.querySelector('#catalog-summary').textContent=`${active.length} produto(s) ativo(s)${devotional?` · Devocional: ${money.format(devotional.amount_cents/100)}`:''}.`;
+   const cents=Math.round(value*100);const nextActive=toggle?!product?.is_active:product?.is_active;
+   if(toggle&&nextActive&&cents<=0){catalogMessage.textContent='Para liberar a venda, informe primeiro um preço maior que R$ 0,00.';input?.focus();return;}
+   const action=toggle?(nextActive?'liberar para venda':'retirar da venda'):'alterar o preço';
+   if(!window.confirm(`Deseja ${action} de “${product?.title||code}”${toggle?'':` para ${money.format(cents/100)}`}?`))return;
+   button.disabled=true;catalogMessage.textContent='Atualizando o catálogo…';
+   const {data,error}=await supabase.rpc('admin_update_commercial_product',{product_code:code,new_amount_cents:cents,new_is_active:nextActive});
+   if(error){catalogMessage.textContent='Não foi possível atualizar o produto: '+error.message;button.disabled=false;renderCatalog();return;}
+   const updated=Array.isArray(data)?data[0]:data;if(updated)catalog=catalog.map(p=>p.code===code?{...p,...updated}:p);
+   catalogMessage.textContent=`“${product?.title||code}” atualizado com sucesso.`;updateSummary();renderCatalog();
  }
  function escapeHtml(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 </script>
