@@ -1,0 +1,12 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BookEditorial from '../../../components/BookEditorial.astro';
+import { trilogy2027 } from '../../../data/trilogia-2027.js';
+const book = trilogy2027[0];
+---
+<Base title={`${book.titulo} | Romulo Schutz`} description={book.synopsis[0]}>
+<section class="hero"><div class="shell book-hero-detail"><div><a class="back-link" href="/livros/">← Voltar aos livros</a><div class="eyebrow">Trilogia · Livro {book.volume}</div><h1>{book.titulo}</h1><p class="lead">{book.synopsis[0]}</p><span class="status-badge">EM BREVE · LANÇAMENTO 2027</span></div><img class="book-detail-cover" src={book.capa} alt={`Capa de ${book.titulo}`}/></div></section>
+<section><div class="shell book-detail"><div><h2>Sinopse</h2>{book.synopsis.slice(1).map(paragraph=><p>{paragraph}</p>)}</div><aside><div class="book-facts"><div class="fact"><strong>Autor</strong>Romulo Schutz</div><div class="fact"><strong>Trilogia</strong>Entre a Cidade e o Silêncio</div><div class="fact"><strong>Volume</strong>{book.volume} · {book.nome}</div><div class="fact"><strong>Lançamento previsto</strong>2027</div></div><p>Conheça a obra enquanto aguarda o lançamento.</p></aside></div></section>
+<BookEditorial title={book.titulo} meaning={book.meaning} spread={book.spread} image={book.image} caption={book.caption}/>
+<section><div class="shell"><h2>Conheça os outros volumes</h2><div class="actions">{trilogy2027.filter(other=>other.volume!==book.volume).map(other=><a class="btn secondary" href={other.href}>{other.nome} →</a>)}</div></div></section>
+</Base>
