@@ -1,0 +1,9 @@
+---
+const { src, alt, class: className = '', loading = 'lazy' } = Astro.props;
+const isCristo = src.endsWith('/cristo-capa-aberta-lombadas-2026-11-02.webp');
+---
+{isCristo ? <span class:list={['cristo-front', className]}><img src={src} alt={alt} loading={loading}/></span> : <img src={src} alt={alt} class={className} loading={loading}/>}
+<style>
+.cristo-front{display:block;position:relative;overflow:hidden;aspect-ratio:620/887!important;width:100%;height:auto!important;padding:0!important;max-width:360px;margin-inline:auto}
+.cristo-front img{position:absolute!important;left:0;top:0;width:286.129%!important;max-width:none!important;height:100%!important;max-height:none!important;padding:0!important;object-fit:fill!important;transform:translateX(-51.522%);border-radius:0!important}
+</style>

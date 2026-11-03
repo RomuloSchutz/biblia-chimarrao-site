@@ -1,0 +1,12 @@
+---
+const { title, meaning, spread, image, caption } = Astro.props;
+---
+<section class="book-editorial-media"><div class="shell">
+<div class="eyebrow">Por trás da obra</div><h2>O significado da capa</h2><p class="lead">{meaning}</p>
+{image&&<figure class="book-presentation"><a href={image} target="_blank" rel="noopener noreferrer" aria-label={`Ampliar apresentação de ${title}`}><img src={image} alt={`Apresentação ilustrada de ${title}`} loading="lazy"/></a><figcaption>{caption}</figcaption></figure>}
+<h2>Capa, contracapa e orelhas</h2><p>Clique na imagem para ampliar e conhecer os textos da edição completa.</p>
+<figure class="book-spread"><a href={spread} target="_blank" rel="noopener noreferrer" aria-label={`Ampliar capa aberta de ${title}`}><img src={spread} alt={`Capa completa aberta de ${title}`} loading="lazy"/></a><figcaption>Capa aberta · clique para ampliar</figcaption></figure>
+</div></section>
+<style>
+.book-presentation,.book-spread{margin:30px 0 48px}.book-presentation img,.book-spread img{display:block;width:100%;height:auto;border-radius:16px;border:1px solid #b89b64}.book-presentation a,.book-spread a{display:block;cursor:zoom-in}figcaption{margin-top:12px;line-height:1.65}h2{margin-top:32px}
+</style>
