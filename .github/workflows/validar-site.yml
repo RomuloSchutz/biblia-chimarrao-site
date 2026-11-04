@@ -1,0 +1,25 @@
+name: Validar site
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Instalar versões fixadas
+        run: npm ci
+      - name: Verificar dependências
+        run: npm audit --audit-level=low
+      - name: Compilar site estático
+        run: npm run build
+        env:
+          ASTRO_TELEMETRY_DISABLED: '1'
+      - name: Conferir rotas e recursos publicados
+        run: npm run verify:build
