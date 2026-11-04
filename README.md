@@ -14,14 +14,18 @@ Criar a presença institucional e orgânica do ecossistema Bíblia + Chimarrão,
 - SEO é parte estrutural do projeto.
 
 ## Desenvolvimento
+Use a versão do Node indicada em `.nvmrc` e instale as versões do lockfile.
+
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
 ## Build
 ```bash
 npm run build
+npm run verify:build
+npm audit
 ```
 
 Saída estática: `dist/`.
