@@ -309,7 +309,7 @@ import Base from '../../layouts/Base.astro';
               );
               if(cover)cover.setAttribute('data-bc-reader-cover','');
               style.textContent+=`
-                html body {padding-bottom:44px !important}
+                html body {padding-bottom:44px !important;overflow-wrap:anywhere}
                 html body:has([data-bc-reader-cover]) {padding-top:10px !important;padding-bottom:10px !important}
                 [data-bc-reader-cover]:not(img) {height:100%;margin:0;display:grid;place-items:center}
                 body [data-bc-reader-cover] > :is(img, svg), body img[data-bc-reader-cover] {
