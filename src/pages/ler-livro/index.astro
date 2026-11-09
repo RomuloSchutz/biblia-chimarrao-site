@@ -79,6 +79,8 @@ import Base from '../../layouts/Base.astro';
       .reader-select-label{font-size:.72rem}.reader-select{padding:6px 8px;font-size:.72rem}.reader-theme-btn{padding:8px 10px}
       .reader-message{margin:0 4px 7px;font-size:.78rem}.reader-wrap{padding:0 46px}
       .reader-stage{height:calc(100dvh - 285px);min-height:430px;border-radius:18px}
+      /* Give EPUB pagination a stable viewport with room below the last line. */
+      #epub-viewer{position:absolute;top:0;left:0;height:calc(100% - max(24px, env(safe-area-inset-bottom, 0px)))}
       .reader-float{width:38px;height:58px;font-size:2.1rem}.reader-float-prev{left:2px}.reader-float-next{right:2px}.reader-hint{font-size:.72rem}
     }
     @media(max-width:520px){.reader-wrap{padding:0 38px}.reader-float{width:34px;height:54px}.reader-actions .btn{padding:7px 9px;font-size:.75rem}}
