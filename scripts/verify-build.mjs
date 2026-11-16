@@ -21,7 +21,10 @@ for(const route of routes){
     resources++
   }
 }
-assert.equal(routes.length,24,'Unexpected public route count; review catalog changes explicitly')
+assert.equal(routes.length,25,'Unexpected public route count; review catalog changes explicitly')
+const freeBook=fs.readFileSync('dist/livros/entre-o-desejo-e-a-esperanca/index.html','utf8')
+assert.match(freeBook,/href="\/assets\/desejo-esperanca\/livro\.epub"/)
+assert.ok(fs.existsSync('dist/assets/desejo-esperanca/livro.epub'))
 const stamp=fs.readFileSync('dist/carimbo-site.webp')
 assert.equal(stamp.toString('ascii',0,4),'RIFF','Stamp must remain a WebP image')
 assert.equal(stamp.toString('ascii',8,12),'WEBP')
