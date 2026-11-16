@@ -1,30 +1,25 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import BookEditorial from '../../../components/BookEditorial.astro';
 import book from '../../../data/desejo-esperanca.json';
 const assets = '/assets/desejo-esperanca';
 ---
 <Base title={book.title + ' | Bíblia + Chimarrão'} description={book.synopsis}>
-  <section class="hero compact-hero">
-    <div class="shell split">
-      <div><p class="eyebrow">E-book gratuito</p><h1>{book.title}</h1><p class="lead">{book.subtitle}</p><p>Romulo Schutz</p><a class="btn primary" href={assets + '/livro.epub'} download>Baixar EPUB gratuito</a></div>
-      <img class="book-cover-display" src={assets + '/capa.webp'} alt={'Capa frontal de ' + book.title} width="430" height="618"/>
+  <section class="hero">
+    <div class="shell book-hero-detail">
+      <div><a class="back-link" href="/livros/">← Voltar aos livros</a><div class="eyebrow">E-book gratuito</div><h1>{book.title}</h1><p class="lead"><strong>{book.subtitle}</strong></p><p>Romulo Schutz</p><a class="btn primary" href={assets + '/livro.epub'} download>Baixar EPUB gratuito</a></div>
+      <img class="book-detail-cover" src={assets + '/capa.webp'} alt={'Capa frontal de ' + book.title} width="430" height="618"/>
     </div>
   </section>
+  <section><div class="shell book-detail"><div><h2>Sobre a obra</h2><h3>Sinopse</h3><p class="lead">{book.synopsis}</p><div class="book-facts"><div class="fact"><strong>Formato</strong>Edição digital gratuita em EPUB</div><div class="fact"><strong>Estrutura</strong>18 capítulos</div></div></div><aside class="topic-list">{book.map.map(item => <div class="topic"><strong>{item.title}</strong>{item.text}</div>)}</aside></div></section>
+  <BookEditorial title={book.title} meaning={book.meaning} image={assets + '/mapa-editorial.webp'} caption="Mapa mental da obra: ação, reação e transformação." spread={assets + '/capa-aberta.webp'}/>
   <section><div class="shell">
-    <h2>Capa aberta</h2>
-    <figure><a href={assets + '/capa-aberta.webp'}><img src={assets + '/capa-aberta.webp'} alt="Capa aberta com orelhas, contracapa, lombada e frente" loading="lazy"/></a><figcaption>Clique na imagem para ampliar.</figcaption></figure>
-    <h2>O significado da capa</h2><p class="lead">{book.meaning}</p>
-    <h2>Sinopse</h2><p class="lead">{book.synopsis}</p>
-    <h2>Mapa mental</h2>
-    <ol class="mind-map">{book.map.map(item => <li class="card"><h3>{item.title}</h3><p>{item.text}</p></li>)}</ol>
     <figure class="author-note"><img src={assets + '/autor.webp'} alt="Romulo Schutz escrevendo em um caderno no horto" loading="lazy"/><figcaption><blockquote>“{book.quote}”</blockquote><p>Romulo Schutz</p></figcaption></figure>
   </div></section>
 </Base>
 <style>
   img{display:block;max-width:100%;height:auto;border-radius:14px}
-  .book-cover-display{width:min(100%,310px);justify-self:center}
   figure{margin:1.5rem 0 2.5rem}
-  .mind-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:1rem;padding:0;list-style:none}
   .author-note{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:1.5rem;align-items:center}
   blockquote{margin:0;font:italic 1.5rem/1.45 Georgia,serif}
 </style>
