@@ -1,0 +1,23 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BookEditorial from '../../../components/BookEditorial.astro';
+import book from '../../../data/promessa-cumprimento.json';
+const assets = '/assets/promessa-cumprimento';
+---
+<Base title={book.title + ' | Bíblia + Chimarrão'} description={book.synopsis}>
+  <section class="hero">
+    <div class="shell book-hero-detail">
+      <div><a class="back-link" href="/livros/">← Voltar aos livros</a><div class="eyebrow">{book.status}</div><h1>{book.title}</h1><p class="lead"><strong>{book.subtitle}</strong></p><p>{book.author}</p><span class="btn primary" aria-label="Lançamento previsto para 2027">Conheça a proposta do livro</span></div>
+      <img class="book-detail-cover" src={assets + '/capa.webp'} alt={`Capa frontal de ${book.title}`} width="430" height="645"/>
+    </div>
+  </section>
+  <section><div class="shell book-detail"><div><h2>Sobre a obra</h2><h3>Sinopse</h3><p class="lead">{book.synopsis}</p><div class="book-facts"><div class="fact"><strong>Previsão</strong>Lançamento em 2027</div><div class="fact"><strong>Temas</strong>Promessas bíblicas · Fidelidade · Esperança em Cristo</div></div></div><aside class="topic-list"><div class="topic"><strong>Da aliança à libertação</strong>As promessas de Deus nas histórias de Israel e na vida cotidiana.</div><div class="topic"><strong>Cristo, centro do cumprimento</strong>As promessas que encontram nele sua confirmação e seu sentido.</div><div class="topic"><strong>A esperança da volta</strong>Confiar na palavra de Cristo sem transformar acontecimentos em calendário.</div></aside></div></section>
+  <BookEditorial title={book.title} meaning={book.meaning} spread={assets + '/capa-aberta.webp'}/>
+  <section><div class="shell"><figure class="author-note"><img src={assets + '/autor.webp'} alt="Romulo Schutz em seu espaço de escrita e reflexão" loading="lazy"/><figcaption><blockquote>“{book.quote}”</blockquote><p>{book.author}</p></figcaption></figure></div></section>
+</Base>
+<style>
+  img{display:block;max-width:100%;height:auto;border-radius:14px}
+  figure{margin:1.5rem 0 2.5rem}
+  .author-note{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:1.5rem;align-items:center}
+  blockquote{margin:0;font:italic 1.5rem/1.45 Georgia,serif}
+</style>
