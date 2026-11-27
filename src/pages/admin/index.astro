@@ -37,29 +37,28 @@ import Base from '../../layouts/Base.astro';
    }
  }
  async function loadDashboard(){
-   const [catalogResult,libraryResult]=await Promise.all([supabase.rpc('get_commercial_catalog'),supabase.rpc('my_book_library')]);
+   const [catalogResult,libraryResult]=await Promise.all([supabase.rpc('admin_get_editorial_catalog'),supabase.rpc('my_book_library')]);
    catalog=catalogResult.data||[];updateSummary();renderCatalog();
    const library=(libraryResult.data||[]).filter(x=>x.has_access===true);const ready=library.filter(x=>x.is_ready===true).length;document.querySelector('#library-summary').textContent=`${library.length} obra(s) com acesso · ${ready} pronta(s) para leitura.`;
  }
- function updateSummary(){const active=catalog.filter(p=>p.is_active);const future=catalog.filter(p=>!p.is_active);document.querySelector('#catalog-summary').textContent=`${active.length} produto(s) à venda · ${future.length} em breve.`;}
+ function updateSummary(){const active=catalog.filter(p=>p.is_active);const future=catalog.filter(p=>!p.is_active);document.querySelector('#catalog-summary').textContent=`${catalog.length} obra(s) cadastrada(s) · ${active.length} à venda · ${future.length} aguardando lançamento.`;}
  function renderCatalog(){
-   if(!catalog.length){catalogList.innerHTML='<p>Nenhum produto encontrado no catálogo.</p>';return;}
-   catalogList.innerHTML=catalog.map(p=>`<div class="catalog-product" data-product="${escapeHtml(p.code)}"><div><h3>${escapeHtml(p.title)}</h3><small>${escapeHtml(p.code)}</small><br><span class="catalog-status ${p.is_active?'active':''}">${p.is_active?'À venda':'Em breve'}</span></div><label class="catalog-price-field">Preço (R$)<input type="number" inputmode="decimal" min="0" step="0.01" value="${(p.amount_cents/100).toFixed(2)}" data-price-input="${escapeHtml(p.code)}" aria-label="Preço de ${escapeHtml(p.title)}"></label><button class="btn secondary" type="button" data-save-price="${escapeHtml(p.code)}">Salvar preço</button><button class="btn ${p.is_active?'secondary':'primary'}" type="button" data-toggle-product="${escapeHtml(p.code)}">${p.is_active?'Retirar da venda':'Liberar venda'}</button></div>`).join('');
+   if(!catalog.length){catalogList.innerHTML='<p>Nenhuma obra cadastrada.</p>';return;}
+   catalogList.innerHTML=catalog.map(p=>`<div class="catalog-product" data-edition="${p.edition_id}"><div><h3>${escapeHtml(p.title)}</h3><small>${p.product_code?escapeHtml(p.product_code):'Ainda sem produto comercial'} · ${p.asset_ready?'EPUB pronto':'EPUB pendente'}${p.has_digital_book?' · biblioteca vinculada':''}</small><br><span class="catalog-status ${p.is_active?'active':''}">${p.is_active?'À venda':'Não está à venda'}</span></div><label class="catalog-price-field">Preço (R$)<input type="number" inputmode="decimal" min="0.01" step="0.01" value="${p.amount_cents?(p.amount_cents/100).toFixed(2):''}" data-price-input="${p.edition_id}" aria-label="Preço de ${escapeHtml(p.title)}" placeholder="Ex.: 39,90"></label><button class="btn secondary" type="button" data-save-price="${p.edition_id}">Salvar preço</button><button class="btn ${p.is_active?'secondary':'primary'}" type="button" data-toggle-product="${p.edition_id}" ${!p.asset_ready?'disabled title="O EPUB precisa estar pronto"':''}>${p.is_active?'Retirar da venda':'Liberar venda'}</button></div>`).join('');
    catalogList.querySelectorAll('[data-save-price]').forEach(button=>button.addEventListener('click',()=>saveProduct(button,false)));
    catalogList.querySelectorAll('[data-toggle-product]').forEach(button=>button.addEventListener('click',()=>saveProduct(button,true)));
  }
  async function saveProduct(button,toggle){
-   const code=toggle?button.dataset.toggleProduct:button.dataset.savePrice;const product=catalog.find(p=>p.code===code);const input=catalogList.querySelector(`[data-price-input="${CSS.escape(code)}"]`);const value=Number(input?.value);
-   if(!Number.isFinite(value)||value<0){catalogMessage.textContent='Informe um preço válido.';input?.focus();return;}
+   const editionId=button.dataset.toggleProduct||button.dataset.savePrice;const product=catalog.find(p=>p.edition_id===editionId);const input=catalogList.querySelector(`[data-price-input="${CSS.escape(editionId)}"]`);const value=Number(input?.value);
+   if(!Number.isFinite(value)||value<=0){catalogMessage.textContent='Informe um preço maior que R$ 0,00.';input?.focus();return;}
    const cents=Math.round(value*100);const nextActive=toggle?!product?.is_active:product?.is_active;
-   if(toggle&&nextActive&&cents<=0){catalogMessage.textContent='Para liberar a venda, informe primeiro um preço maior que R$ 0,00.';input?.focus();return;}
-   const action=toggle?(nextActive?'liberar para venda':'retirar da venda'):'alterar o preço';
-   if(!window.confirm(`Deseja ${action} de “${product?.title||code}”${toggle?'':` para ${money.format(cents/100)}`}?`))return;
+   if(toggle&&nextActive&&!product?.asset_ready){catalogMessage.textContent='O EPUB precisa estar pronto antes da liberação.';return;}
+   const action=toggle?(nextActive?'liberar para venda':'retirar da venda'):'salvar o preço';
+   if(!window.confirm(`Deseja ${action} de “${product?.title||'esta obra'}”${toggle?'':` para ${money.format(cents/100)}`}?`))return;
    button.disabled=true;catalogMessage.textContent='Atualizando o catálogo…';
-   const {data,error}=await supabase.rpc('admin_update_commercial_product',{product_code:code,new_amount_cents:cents,new_is_active:nextActive});
-   if(error){catalogMessage.textContent='Não foi possível atualizar o produto: '+error.message;button.disabled=false;renderCatalog();return;}
-   const updated=Array.isArray(data)?data[0]:data;if(updated)catalog=catalog.map(p=>p.code===code?{...p,...updated}:p);
-   catalogMessage.textContent=`“${product?.title||code}” atualizado com sucesso.`;updateSummary();renderCatalog();
+   const {data,error}=await supabase.rpc('admin_upsert_edition_product',{target_edition_id:editionId,new_amount_cents:cents,new_is_active:nextActive});
+   if(error){catalogMessage.textContent='Não foi possível atualizar: '+error.message;button.disabled=false;return;}
+   catalogMessage.textContent=`“${product?.title||'Obra'}” atualizado. Recarregando catálogo…`;await loadDashboard();
  }
  function escapeHtml(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 </script>
